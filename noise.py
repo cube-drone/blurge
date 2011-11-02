@@ -35,6 +35,17 @@ def grid_noise( grid, name_of_property, randomness_factor ):
     
     __grid_noise_from_corners( grid, name_of_property, randomness_factor, 0, grid.width-1, 0, grid.height-1 )
 
+class NoiseChoice(object):
+    """
+    An object that, given a 'noise' value, can be used to make a choice 
+    between a variety of different things.
+    """
+    def __init__(self, list_of_choices=[], midpoint = 0.5):
+        self.list_of_choices = list_of_choices
+        self.noise = midpoint
+    def choice(self): 
+        return self.list_of_choices[int(round(self.noise * len(self.list_of_choices)))]
+
 def __line_noise_from_start_to_end( list_of_objects, name_of_property, randomness_factor, start, end ):
     
     middle_index = __middle( start, end );

@@ -1,38 +1,124 @@
 import abjad
-
-class Note(object):
-    def __init__(self):
-        self.raw_pitch = 0.5
-    def abjad_note(self):
-        return abjad.Note("c'4")
-
-class ChromaticPitchNote(Note):
-    def __init__(self, number_of_chromatic_pitches):
-        self.raw_pitch = 0.5
-        self.pitches = number_of_chromatic_pitches
-    def abjad_note(self):
-        return abjad.Note( int(round(self.raw_pitch * self.pitches)), abjad.Duration(1,4))
+import random
+import copy
+from note import *
+from rhythm import * 
 
 class SimpleLineMelody(object):
 
     def __init__(self, line):
+        self.line = line 
+   
+    def append_note(self, note):
+        self.line.append( note )
+
+    def append_line(self, line):
+        self.line.extend( line )
+
+    def generate(self):
         # We have a line containing notes. 
         self.score = abjad.Score([])
         staff = abjad.Staff([])
 
-        for note in line:
+        for note in self.line:
             staff.append( note.abjad_note() )
         
         self.score.append( staff )
-    
+
     def show(self):
-        abjad.show(self.score)
+        lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(self.score)
+        lilypond_file.score_block.append(abjad.lilypondfiletools.MIDIBlock() )
+        layout_block = abjad.lilypondfiletools.LayoutBlock()
+        layout_block.is_formatted_when_empty = True
+        lilypond_file.score_block.append(layout_block)
+        
+        abjad.show( lilypond_file) 
+
+class SimpleRhythmMelody(SimpleLineMelody):
+    
+    def __init__(self, line, rhythm):
+        self.line = line
+        self.rhythm = rhythm
+        self.rhythm_queue = []
+
+    def __beat(self):
+        if( self.rhythm_queue == [] ):
+            self.rhythm_queue = self.rhythm.duration_map()
+        return self.rhythm_queue.pop()
+
+    def generate(self):
+        self.score = abjad.Score([])
+        staff = abjad.Staff([])
+        
+        for note in self.line:
+            note.set_duration( self.__beat() )
+            abj_note = note.abjad_note()
+            staff.append( abj_note )
+        
+        self.score.append( staff )
+
+class Chorus(SimpleLineMelody):
+    def __init__ (self, rhythm, noteclass, randomness_factor):
+        self.__rhythm = rhythm
+        self.__note = noteclass
+        self.__randomness = randomness_factor
+        self.duration_map = []
+        self.notes = []
+
+    def generate_raw_melody(self):
+        self.duration_map = self.__rhythm.duration_map()
+        self.notes = [copy.deepcopy( self.__note ) for i in range( 0, len(self.duration_map) )]
+        noise.line_noise( self.notes, 'noise', self.__randomness )  
+
+    def add( self, chorus ):
+        self.duration_map.extend( chorus.duration_map )
+        self.notes.extend( chorus.notes ) 
+
+    def generate(self):
+        # We have a line containing notes. 
+        self.score = abjad.Score([])
+        staff = abjad.Staff([])
+
+        for i in range( 0, len(self.duration_map )):
+            duration = self.duration_map[i]
+            note = self.notes[i]
+            note.duration = duration
+            staff.append( note.abjad_note() )
+        
+        self.score.append( staff )
+
+    def showtime(self):
+        self.generate_raw_melody()
+        self.generate()
+        self.show()
+
+def __test_simple_line_melody():
+    
+    notes = [CWholeTone() for i in range(0, 20) ]
+    noise.line_noise( notes, 'raw_pitch', 0.5 ) 
+    melody = SimpleLineMelody(notes)
+    melody.generate()
+    melody.show()
+
+def __test_simple_rhythm_melody():
+   
+    # Refactor so that a note and a duration are unified before processing. 
+    notes = [CMajorDiatonic() for i in range(0, 12) ]
+    noise.line_noise( notes, 'raw_pitch', 0.5 ) 
+    
+    melody = SimpleRhythmMelody(notes, RandomSplitRhythm( 0.95, 0.8 ))
+
+    melody.generate()
+    melody.show()
+
+def __test_chorus():
+
+    chorus = Chorus( RandomSplitRhythm( 0.95, 0.8), CPentatonic(), 0.3 ) 
+    chorus.showtime()
 
 if __name__ == "__main__":
-   
     import noise
     
-    notes = [ChromaticPitchNote(36) for i in range(0, 60) ]
-    noise.line_noise( notes, 'raw_pitch', 0.3 ) 
-    melody = SimpleLineMelody(notes)
-    melody.show()
+    #__test_simple_line_melody() 
+    #__test_simple_rhythm_melody()
+    __test_chorus()
