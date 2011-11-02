@@ -65,6 +65,11 @@ class BluesScale(ListOfNotes):
                                              "c'", "ef'", "f'", "fs'", "g'", "bf'", \
                                              "c''", "ef''", "f''", "fs''", "g''", "bf''" ], duration)
 
+class LowBluesScale(ListOfNotes):
+    def __init__(self, duration = 16):
+        super( LowBluesScale, self).__init__( [ "c,,", "ef,,", "f,,", "fs,,", "g,,", "bf,,", \
+                                             "c,", "ef,", "f,", "fs,", "g,", "bf,", \
+                                             "c", "ef", "f", "fs", "g", "bf" ], duration)
                                              
 
 
