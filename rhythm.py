@@ -42,6 +42,43 @@ class RandomSplitRhythm(Rhythm):
         self.__generate()
         return self.meter
 
+class MultiPassRhythm(Rhythm):
+    def __init__(self, split_probability, number_of_passes):
+        self.probability = split_probability
+        self.number_of_passes = number_of_passes
+
+    def __generate(self):
+        self.meter = [1]
+        self.smallest_note = 32
+
+        self.__split( 0 )
+        for i in range( 0, self.number_of_passes):
+            self.__split_at_random_index()
+        self.__sanity_check( )
+
+    def __split_at_random_index(self):
+        index = int( round( random.random() * ( len(self.meter)-1 ) ) )
+        self.__split( index )
+
+    def __split(self, index):
+        if self.meter[index] < self.smallest_note and random.random() < self.probability:
+            new_val = self.meter[index] * 2
+            self.meter[index] = new_val
+            self.meter.insert(index, new_val) 
+
+    def __sanity_check( self) :
+        val = 0
+        for i in self.meter:
+            val = val + 1.0/i
+        if val > 1.1 or val < 0.9:
+            print val
+            # yes, I know float equality is touchy business
+            raise Hell( "This meter does not add up to a whole meter for some reason." )
+    
+    def duration_map(self):
+        self.__generate()
+        return self.meter
+
 class PatternedSplitRhythm(Rhythm):
     def __init__(self, rhythm, number_of_rhythms = 6, length = 3, randomness_factor = 0.5):
         self.rhythm = rhythm
@@ -68,6 +105,10 @@ def __test_random_split_rhythm():
     r = RandomSplitRhythm( 0.9, 0.55 ) 
     print r.duration_map()
 
+def __test_multi_pass_rhythm():
+    r = MultiPassRhythm( 0.9, 4 ) 
+    print r.duration_map()
+
 
 if __name__ == "__main__":
-    __test_random_split_rhythm()
+    __test_multi_pass_rhythm()

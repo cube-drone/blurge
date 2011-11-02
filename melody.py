@@ -49,7 +49,7 @@ class SimpleRhythmMelody(SimpleLineMelody):
     def generate(self):
         self.score = abjad.Score([])
         staff = abjad.Staff([])
-        
+       
         for note in self.line:
             note.set_duration( self.__beat() )
             abj_note = note.abjad_note()
@@ -87,12 +87,43 @@ class Chorus(SimpleLineMelody):
         
         self.score.append( staff )
 
-class ComplexChorus(object):
-    def __init__(self, chorus, number_of_chorals, length, randomness_factor):
+class NoisyChorus(Chorus):
+    def __init__ (self, rhythm, noteclass, randomness_factor):
+        super( NoisyChorus, self ).__init__(rhythm, noteclass, randomness_factor)
+
+    def generate_raw_melody(self):
+        super( NoisyChorus, self ).generate_raw_melody()
+        if random.choice([True, False]):
+            self.notes = self.notes[:int(round(len(self.notes) / 2))]
+            self.duration_map = self.duration_map[:int(round(len(self.duration_map) / 2))]
+        else:
+            self.notes = self.notes[int(round(len(self.notes) / 2)):]
+            self.duration_map = self.duration_map[int(round(len(self.duration_map) / 2)):]
+
+    def improvise(self):
+        technique = random.choice([ do_nothing, one_note_up, one_note_down ])
+        self.notes = technique(self.notes)
+
+def one_note_up(list_of_notes):
+    for note in list_of_notes:
+        note.noise = note.noise + ( 1.0 / len( note.list_of_choices ) )
+    return list_of_notes
+
+def one_note_down(list_of_notes):
+    for note in list_of_notes:
+        note.noise = note.noise - ( 1.0 / len( note.list_of_choices ) )
+    return list_of_notes
+
+def do_nothing(list_of_notes):
+    return list_of_notes
+
+class SimpleComposition(object):
+    def __init__(self, chorus, number_of_chorals, length, randomness_factor =0.5, improvise = 0):
         self.chorals = [ copy.deepcopy( chorus ) for i in range( 0, number_of_chorals ) ]
         self.__length = length
         self.__randomness = randomness_factor
         self.chorus = chorus 
+        self.__improvise = improvise
 
     def generate_raw_melody(self):
         for chorus in self.chorals:
@@ -102,6 +133,7 @@ class ComplexChorus(object):
 
         for chunk in self.chunks:
             chorus = chunk.choice()
+            noise.line_noise( chorus.notes , 'noise', self.__improvise )
             self.chorus.add( chunk.choice() )
 
     def generate_score(self):
@@ -109,6 +141,23 @@ class ComplexChorus(object):
 
     def show(self):
         self.chorus.show()
+
+class EleanorRigby(SimpleComposition):
+    def __init__(self, chorus):
+        self.chorals = [ copy.deepcopy( chorus ) for i in range( 0, 3 ) ]
+        self.chorus = chorus
+       
+    def generate_raw_melody(self):
+        for chorus in self.chorals:
+            chorus.generate_raw_melody()
+
+        self.pattern = [0, 0, 1, 1, 2, 2, 0, 0, 1, 1, 2, 2, 0, 0, 1, 1, 2, 2] 
+
+        for n in self.pattern:
+            choral = copy.deepcopy(self.chorals[n])
+            choral.improvise()
+            self.chorus.add( choral )
+        
 
 def __test_simple_line_melody():
     notes = [CWholeTone() for i in range(0, 20) ]
@@ -134,16 +183,35 @@ def __test_chorus():
     chorus.show()
 
 def __test_complex_chorus():
-    rhythm = RandomSplitRhythm (0.95, 0.8)
-    chorus = Chorus( rhythm, CPentatonic(), 0.5 ) 
-    complex_chorus = ComplexChorus( chorus, 8, 12, 0.6)
+    #rhythm = RandomSplitRhythm (0.95, 0.8)
+    rhythm = MultiPassRhythm( 0.8, 8 )
+    rhythm = PatternedSplitRhythm( rhythm, 2, 2, 0.5)
+    #note = CPentatonicThreeOctaves()
+    #note = CMajorDiatonicThreeOctaves()
+    note = ChromaticPitchNote(24)
+    chorus = Chorus( rhythm, note, 0.5 ) 
+    complex_chorus = SimpleComposition( chorus, 2, 4, 0.5, 0.3)
     complex_chorus.generate_raw_melody()
     complex_chorus.generate_score()
     complex_chorus.show()
+
+def __eleanor():
+    rhythm = MultiPassRhythm( 0.4, 15 )
+    rhythm = PatternedSplitRhythm( rhythm, 2, 2, 0.5)
+    note = BluesScale()
+    #note = CPentatonicThreeOctaves()
+    #note = CMajorDiatonicThreeOctaves()
+    chorus = NoisyChorus( rhythm, note, 0.3 ) 
+    eleanor = EleanorRigby( chorus )
+    eleanor.generate_raw_melody()
+    eleanor.generate_score()
+    eleanor.show()
+     
 
 if __name__ == "__main__":
     import noise
     
     #__test_simple_line_melody() 
     #__test_simple_rhythm_melody()
-    __test_complex_chorus()
+    #__test_complex_chorus()
+    __eleanor()

@@ -3,7 +3,7 @@ import noise
 
 class Note(object):
     def __init__(self, duration = 16):
-        self.raw_pitch = 0.5
+        self.noise = 0.5
         self.duration = duration
     
     def set_duration( self, duration = -1 ):
@@ -22,7 +22,7 @@ class ChromaticPitchNote(Note):
         self.pitches = number_of_chromatic_pitches
 
     def abjad_note(self):
-        return abjad.Note( int(round(self.raw_pitch * self.pitches)), abjad.Duration(1, self.duration))
+        return abjad.Note( int(round(self.noise * self.pitches)), abjad.Duration(1, self.duration))
 
 class ListOfNotes(noise.NoiseChoice):
     """ A note generated from a list of potential notes. """
@@ -31,6 +31,7 @@ class ListOfNotes(noise.NoiseChoice):
         self.duration = duration
     def abjad_note(self):
         note_string = self.choice() + str(self.duration) 
+        #print "Note: " + note_string
         return abjad.Note( note_string )
 
 class CMajorDiatonic(ListOfNotes):
@@ -51,3 +52,19 @@ class CWholeTone(ListOfNotes):
 class CPentatonic(ListOfNotes):
     def __init__(self, duration = 16):
         super( CPentatonic, self).__init__( ["c", "d", "e", "g", "a", "c'"], duration)
+
+class CPentatonicThreeOctaves(ListOfNotes):
+    def __init__(self, duration = 16):
+        super( CPentatonicThreeOctaves, self).__init__( ["c", "d", "e", "g", "a", \
+                                                        "c'", "d'", "e'", "g'", "a'", \
+                                                        "c''", "d''", "e''", "g''", "a''" ], duration)
+
+class BluesScale(ListOfNotes):
+    def __init__(self, duration = 16):
+        super( BluesScale, self).__init__( [ "c", "ef", "f", "fs", "g", "bf", \
+                                             "c'", "ef'", "f'", "fs'", "g'", "bf'", \
+                                             "c''", "ef''", "f''", "fs''", "g''", "bf''" ], duration)
+
+                                             
+
+
