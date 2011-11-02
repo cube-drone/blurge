@@ -44,7 +44,7 @@ class NoiseChoice(object):
         self.list_of_choices = list_of_choices
         self.noise = midpoint
     def choice(self): 
-        return self.list_of_choices[int(round(self.noise * len(self.list_of_choices)))]
+        return self.list_of_choices[int(round(self.noise * len(self.list_of_choices)-1))]
 
 def __line_noise_from_start_to_end( list_of_objects, name_of_property, randomness_factor, start, end ):
     

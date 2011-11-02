@@ -74,7 +74,7 @@ class Chorus(SimpleLineMelody):
         self.duration_map.extend( chorus.duration_map )
         self.notes.extend( chorus.notes ) 
 
-    def generate(self):
+    def generate_score(self):
         # We have a line containing notes. 
         self.score = abjad.Score([])
         staff = abjad.Staff([])
@@ -87,13 +87,30 @@ class Chorus(SimpleLineMelody):
         
         self.score.append( staff )
 
-    def showtime(self):
-        self.generate_raw_melody()
-        self.generate()
-        self.show()
+class ComplexChorus(object):
+    def __init__(self, chorus, number_of_chorals, length, randomness_factor):
+        self.chorals = [ copy.deepcopy( chorus ) for i in range( 0, number_of_chorals ) ]
+        self.__length = length
+        self.__randomness = randomness_factor
+        self.chorus = chorus 
+
+    def generate_raw_melody(self):
+        for chorus in self.chorals:
+            chorus.generate_raw_melody()
+        self.chunks = [ noise.NoiseChoice(self.chorals, 0.5) for i in range( 0, self.__length ) ] 
+        noise.line_noise( self.chunks, 'noise', self.__randomness )
+
+        for chunk in self.chunks:
+            chorus = chunk.choice()
+            self.chorus.add( chunk.choice() )
+
+    def generate_score(self):
+        self.chorus.generate_score()
+
+    def show(self):
+        self.chorus.show()
 
 def __test_simple_line_melody():
-    
     notes = [CWholeTone() for i in range(0, 20) ]
     noise.line_noise( notes, 'raw_pitch', 0.5 ) 
     melody = SimpleLineMelody(notes)
@@ -101,7 +118,6 @@ def __test_simple_line_melody():
     melody.show()
 
 def __test_simple_rhythm_melody():
-   
     # Refactor so that a note and a duration are unified before processing. 
     notes = [CMajorDiatonic() for i in range(0, 12) ]
     noise.line_noise( notes, 'raw_pitch', 0.5 ) 
@@ -112,13 +128,22 @@ def __test_simple_rhythm_melody():
     melody.show()
 
 def __test_chorus():
-
     chorus = Chorus( RandomSplitRhythm( 0.95, 0.8), CPentatonic(), 0.3 ) 
-    chorus.showtime()
+    chorus.generate_raw_melody()
+    chorus.generate_score()
+    chorus.show()
+
+def __test_complex_chorus():
+    rhythm = RandomSplitRhythm (0.95, 0.8)
+    chorus = Chorus( rhythm, CPentatonic(), 0.5 ) 
+    complex_chorus = ComplexChorus( chorus, 8, 12, 0.6)
+    complex_chorus.generate_raw_melody()
+    complex_chorus.generate_score()
+    complex_chorus.show()
 
 if __name__ == "__main__":
     import noise
     
     #__test_simple_line_melody() 
     #__test_simple_rhythm_melody()
-    __test_chorus()
+    __test_complex_chorus()

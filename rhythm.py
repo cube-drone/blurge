@@ -42,7 +42,7 @@ class RandomSplitRhythm(Rhythm):
         self.__generate()
         return self.meter
 
-def PatternedSplitRhythm(Rhythm):
+class PatternedSplitRhythm(Rhythm):
     def __init__(self, rhythm, number_of_rhythms = 6, length = 3, randomness_factor = 0.5):
         self.rhythm = rhythm
         self.number_of_rhythms = number_of_rhythms
