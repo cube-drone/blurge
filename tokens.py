@@ -19,7 +19,7 @@ class Token( object ):
     def atPoint( self, grid, point ):
         """ Tests if this token exists at a point on the board. """ 
         x, y = point
-        if grid.get( x, y ).token and grid.get( x, y ).token.name() == self.name():
+        if grid.get(x, y) and grid.get( x, y ).token and grid.get( x, y ).token.name() == self.name():
             return True
         else:
             return False
@@ -130,7 +130,11 @@ def __knight_test():
     assert( Knight().isValid( g, (4, 7 ) ) )
     assert( Knight().isValid( g, (7, 4 ) ) )
     assert( not Knight().isValid( g, (3, 5) ) )
-    
+
+    g.get( 9, 9 ).token = Knight()
+    assert( Knight().isValid( g, (7, 8) ) )
+    assert( not Knight().isValid( g, (7, 7) ) )
+
 if __name__ == '__main__':
     __checker_test()
     __rook_test()

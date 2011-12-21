@@ -34,6 +34,9 @@ class Grid(object):
                 yield (i, j)
 
     def get(self,x,y):
+        """ If you ask for a tile that is out of range, you get a False """
+        if y > self.height-1 or x > self.width: 
+            return False
         return self.__matrix[self.height-1-y][x]
 
     def set(self,x,y,thing):
@@ -58,6 +61,7 @@ if __name__ == "__main__":
     g.get(9,0).content = "5"
     g.get(9,4).content = "2"
     g.get(0,4).content = "1"
+    assert( not g.get(100, 100) )  
 
     t = __test_mock_tile()
     t.content = "3"
