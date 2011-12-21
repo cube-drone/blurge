@@ -1,6 +1,8 @@
 import copy
+import errors
 
 class Grid(object):
+    """ A grid. """
 
     def __init__(self, width, height, default_tile):
         self.__matrix = []
@@ -23,9 +25,13 @@ class Grid(object):
             yield i
 
     def all(self):
-        for i in self.__matrix:
-            for j in i:
-                yield j
+        for i, j in self.points():
+            yield self.get(i, j)
+
+    def points(self):
+        for i in range( 0, self.width ):
+            for j in range( 0, self.height ):
+                yield (i, j)
 
     def get(self,x,y):
         return self.__matrix[self.height-1-y][x]
@@ -58,4 +64,20 @@ if __name__ == "__main__":
     g.set(4, 2, t)
     print g
 
+    counter = 0
+    for i, j in g.points():
+        x = g.get(i, j)
+        counter += 1
+    
+    if not counter == 50:
+        raise errors.Hell( "grid.points() should produce 50 points." )
+    
+    counter = 0 
+    for i in g.all():
+        counter += 1
+
+    if not counter == 50:
+        raise errors.Hell( "grid.all() should produce 50 outputs." ) 
+
+    
     

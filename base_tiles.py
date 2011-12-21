@@ -15,7 +15,6 @@ class Tile(object):
                 "display": self.__repr__(),
                 }
 
-
 class TokenTile(Tile):
     """ This tile can have tokens on it. """
     def __init__(self, display_character):
@@ -25,6 +24,14 @@ class TokenTile(Tile):
     def put_token(self, token):
         self.tokens.append( token )
         return self
+
+    def __repr__(self):
+        if self.tokens == []:
+            return self.display_character
+        elif len(self.tokens) == 1:
+            return self.tokens.__repr__()
+        else
+            return len(self.tokens) 
 
     def serialize(self):
         ser = super( TokenTile, self).serialize()
