@@ -2,8 +2,8 @@ from base_tiles import Tile
 
 class SingleTokenTile(Tile):
     """ This tile can have one token on it. """
-    def __init__(self, display_character):
-        super( SingleTokenTile, self).__init__( display_character )
+    def __init__(self):
+        super( SingleTokenTile, self).__init__( "." )
         self._token = False
 
     def get_token( self ):

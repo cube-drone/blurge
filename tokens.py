@@ -1,4 +1,4 @@
-from grid import Grid
+from token_grid import TokenGrid
 from token_tiles import SingleTokenTile 
 
 class Token( object ):
@@ -22,29 +22,14 @@ class Token( object ):
 
     def atPoint( self, grid, point ):
         """ Tests if this token exists at a point on the board. """ 
-        return isTokenAtPoint( self, grid, point )
+        return grid.isTokenAtPoint( self, point )
 
     def atPointInList( self, grid, list_of_points ):
         """ Tests if this token exists at any of these points on the board. """
-        return isTokenAtPointInList( self, grid, list_of_points )
+        return grid.isTokenAtPointInList( self, list_of_points )
 
     def __repr__(self):
         return self.name()
-
-def isTokenAtPoint( token, grid, point ): 
-    """ Tests if this token exists at a point on the board. """ 
-    x, y = point
-    if grid.get(x, y) and grid.get( x, y ).token and grid.get( x, y ).token.name() == token.name():
-        return True
-    else:
-        return False
-
-def isTokenAtPointInList( token, grid, list_of_points ):
-    """ Tests if this token exists at any of these points on the board. """
-    for point in list_of_points:
-        if token.atPoint( grid, point ):
-            return True
-    return False
 
 class InvisibleToken( Token ):
     def name( self ):
@@ -66,7 +51,7 @@ class Checker( Token ):
         return True
 
 def __checker_test():
-    g = Grid(10, 10, SingleTokenTile('.') )
+    g = TokenGrid(10, 10)
 
     assert( not Checker().isValid( g, (0, 0) ))
     assert(  Checker().isValid( g, (0, 1) ))
@@ -100,7 +85,7 @@ class Rook( Token ):
         return False
 
 def __rook_test():
-    g = Grid(10, 10, SingleTokenTile('.') )
+    g = TokenGrid(10, 10)
     
     assert( Rook().isValid( g, (3, 3 ) ) )
     g.get( 3, 3 ).token = Rook()
@@ -135,7 +120,7 @@ class Knight( Token ):
 
 
 def __knight_test():
-    g = Grid(10, 10, SingleTokenTile('.') )
+    g = TokenGrid(10, 10)
     
     assert( Knight().isValid( g, (5, 5 ) ) )
     g.get( 5, 5 ).token = Knight()
@@ -159,18 +144,18 @@ class Pawn( Token ):
         token_locations = [ (x+1, y), (x, y+1), (x-1, y), (x, y-1) ] 
         pawn_locations = [ (x+1, y+1), (x+1, y-1), (x-1, y+1), (x-1, y-1) ]
 
-        for pawn_point in pawn_locations:
-            px, py = pawn_point
-            if self.atPoint( grid, (px, py) ):
-                return True
+        if self.atPointInList( grid, pawn_locations ):
+            return True
+
+        
 
         for token_point in token_locations:
             tx, ty = token_point
-            if grid.get( tx, ty ) and grid.get( tx, ty ).token and not self.atPoint( grid, (tx, ty) ):
+            if grid.isAnyTokenAtPoint( (tx, ty) ) and not self.atPoint( grid, (tx, ty) ):
                 return True
 
 def __pawn_test():
-    g = Grid(10, 10, SingleTokenTile('.') )
+    g = TokenGrid(10, 10)
     
     assert( Knight().isValid( g, (5, 5 ) ) )
     g.get( 5, 5 ).token = Knight()
