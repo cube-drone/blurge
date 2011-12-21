@@ -8,6 +8,10 @@ class Token( object ):
     def isValid( self, grid, point ):
         """ Takes a grid object and a tuple point (x, y) """
         return true
+    
+    def afterPlacement( self, grid, point ):
+        """ Called after the token is placed at a point. """
+        return self
 
     def existsOnTheBoard( self, grid ):
         """ Returns True if this token exists anywhere on the grid. """
@@ -18,18 +22,29 @@ class Token( object ):
 
     def atPoint( self, grid, point ):
         """ Tests if this token exists at a point on the board. """ 
-        x, y = point
-        if grid.get(x, y) and grid.get( x, y ).token and grid.get( x, y ).token.name() == self.name():
-            return True
-        else:
-            return False
+        return isTokenAtPoint( self, grid, point )
 
-    def afterPlacement( self, grid, point ):
-        """ Called after the token is placed at a point. """
-        return self
+    def atPointInList( self, grid, list_of_points ):
+        """ Tests if this token exists at any of these points on the board. """
+        return isTokenAtPointInList( self, grid, list_of_points )
 
     def __repr__(self):
         return self.name()
+
+def isTokenAtPoint( token, grid, point ): 
+    """ Tests if this token exists at a point on the board. """ 
+    x, y = point
+    if grid.get(x, y) and grid.get( x, y ).token and grid.get( x, y ).token.name() == token.name():
+        return True
+    else:
+        return False
+
+def isTokenAtPointInList( token, grid, list_of_points ):
+    """ Tests if this token exists at any of these points on the board. """
+    for point in list_of_points:
+        if token.atPoint( grid, point ):
+            return True
+    return False
 
 class InvisibleToken( Token ):
     def name( self ):
@@ -135,7 +150,53 @@ def __knight_test():
     assert( Knight().isValid( g, (7, 8) ) )
     assert( not Knight().isValid( g, (7, 7) ) )
 
+class Pawn( Token ):
+    def name( self ):
+        return "Pawn"
+    def isValid( self, grid, point):
+        """ A pawn can be placed adjacent to any other piece, or diagonal to any other pawn. """ 
+        x, y = point
+        token_locations = [ (x+1, y), (x, y+1), (x-1, y), (x, y-1) ] 
+        pawn_locations = [ (x+1, y+1), (x+1, y-1), (x-1, y+1), (x-1, y-1) ]
+
+        for pawn_point in pawn_locations:
+            px, py = pawn_point
+            if self.atPoint( grid, (px, py) ):
+                return True
+
+        for token_point in token_locations:
+            tx, ty = token_point
+            if grid.get( tx, ty ) and grid.get( tx, ty ).token and not self.atPoint( grid, (tx, ty) ):
+                return True
+
+def __pawn_test():
+    g = Grid(10, 10, SingleTokenTile('.') )
+    
+    assert( Knight().isValid( g, (5, 5 ) ) )
+    g.get( 5, 5 ).token = Knight()
+    
+    assert( Pawn().isValid( g, (5, 6 ) ) )
+    assert( Pawn().isValid( g, (6, 5 ) ) )
+    assert( Pawn().isValid( g, (4, 5 ) ) )
+    assert( Pawn().isValid( g, (5, 4 ) ) )
+    assert( not Pawn().isValid( g, (3, 5) ) )
+
+    g.get( 6, 5 ).token = Pawn()
+    assert( Pawn().isValid( g, (7, 6 ) ) )
+    assert( Pawn().isValid( g, (5, 4 ) ) )
+    assert( Pawn().isValid( g, (7, 4 ) ) )
+    assert( Pawn().isValid( g, (5, 6 ) ) )
+    assert( not Pawn().isValid( g, ( 6, 6 ) ) )
+
+def King( Token ):
+    def name( self ):
+        return "King"
+    def isValid( self, grid, point ):
+        """ A king cannot be placed adjacent to any other piece, nor can any other piece be placed adjacent to a king."""
+        x, y = point
+
 if __name__ == '__main__':
     __checker_test()
     __rook_test()
     __knight_test()
+    __pawn_test()
