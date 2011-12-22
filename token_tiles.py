@@ -14,13 +14,13 @@ class SingleTokenTile(Tile):
             raise TokenOverlap()
         self._token = value
 
-    def clear_token( self, value ):
-        self._token = ""
+    def clear_token( self ):
+        self._token = False
 
     token = property( get_token, set_token ) 
 
     def __repr__(self):
-        if self.token == "":
+        if not self.token:
             return self.display_character
         else:
             return self.token.__repr__()

@@ -1,6 +1,7 @@
 from token_grid import TokenGrid
 from grid import adjacentPoints, isDiagonalPoint
 from token_tiles import SingleTokenTile 
+import random
 
 class Token( object ):
     def name( self ):
@@ -30,7 +31,7 @@ class Token( object ):
         return grid.isTokenAtPointInList( self, list_of_points )
 
     def __repr__(self):
-        return self.name()
+        return self.name()[0]
 
 class InvisibleToken( Token ):
     def name( self ):
@@ -244,6 +245,64 @@ def __parasite_test():
     assert( g.placeToken( Parasite(), (5, 6) ) )
     assert( not g.placeToken( Parasite(), (6, 6) ) )
 
+
+class Joker( Token ):
+    def name( self ):
+        return "Joker" 
+    def isValid( self, grid, point ):
+        """ No pattern here. Randomness. """
+        return random.choice( [ True, False, False ] ) 
+
+def __joker_test():
+    g = TokenGrid( 100, 10 )
+    
+    for point in g.points():
+        g.placeToken( Joker(), point ) 
+
+    counter = 0 
+    for point in g.points():
+        if g.isAnyTokenAtPoint( point ): 
+            counter += 1
+    assert( counter > 0 and counter < 1000 )
+
+
+class Bomb( Token ):
+    def name( self ):
+        return "Bomb"
+    def isValid( self, grid, point ):
+        return True
+
+    def afterPlacement( self, grid, point ):
+        """ Called after the token is placed at a point. """
+        
+        points = adjacentPoints( point )
+        for point in points:
+            grid.clearToken( point )  
+
+        return self
+
+def __bomb_test():
+    g = TokenGrid( 10, 10 )
+
+    assert( g.placeToken( Rook(), (4,6) ) )
+    assert( g.placeToken( Rook(), (5,6) ) )
+    assert( g.placeToken( Rook(), (6,6) ) )
+    assert( g.placeToken( Rook(), (4,5) ) )
+    assert( g.placeToken( Rook(), (6,5) ) )
+    assert( g.placeToken( Rook(), (4,4) ) )
+    assert( g.placeToken( Rook(), (5,4) ) )
+    assert( g.placeToken( Rook(), (6,4) ) )
+    
+    assert( g.placeToken( Bomb(), (5,5) ) ) 
+
+    assert( not Rook().existsOnTheBoard( g ) )
+
+# class Block( Token ):
+# class UnRook( Token )
+# class UnBishop( Token )
+# class Glob( Token )
+# class 
+
 if __name__ == '__main__':
     __checker_test()
     __rook_test()
@@ -252,3 +311,5 @@ if __name__ == '__main__':
     __king_test()
     __bishop_test()
     __parasite_test()
+    __joker_test()
+    __bomb_test()

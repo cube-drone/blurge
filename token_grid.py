@@ -18,6 +18,15 @@ class TokenGrid( Grid ):
         self.get(x,y).token = token
         token.afterPlacement( self, point )  
         return True
+
+    def clearToken( self, point ):
+        """ Remove a token from a point on the grid. """
+        x, y = point
+        if not self.get( x, y ):
+            return 
+        if not self.get( x, y ).token:
+            return
+        self.get( x, y ).clear_token() 
     
     def isTokenAtPoint( self, token, point ): 
         """ Tests if this token exists at a point on the board. """ 
