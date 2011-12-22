@@ -314,6 +314,32 @@ def __glob_test():
     assert( g.placeToken( Glob(), (5, 7) ) )
     assert( g.placeToken( Glob(), (6, 8) ) )
     assert( not g.placeToken( Glob(), (1,1) ) )
+    assert( g.frequencyHistogram()['Glob'] == 4 ) 
+
+class Brick( Token ):
+    def name( self ):
+        return "Brick"
+    def isValid( self, grid, point ):
+        """ A brick cannot be placed adjacent to any piece. """
+        if( grid.isAnyTokenAtPointInList( adjacentPoints( point ) ) ):
+            return False
+        return True 
+    
+    def afterPlacement( self, grid, point ):
+        """ Called after the token is placed at a point. """
+       
+        points = adjacentPoints( point )
+        for brick_point in points:
+            x,y = brick_point
+            grid.get(x,y).token = Brick()
+
+        return self
+
+def __brick_test():
+    g = TokenGrid( 10, 10 )
+    assert( g.placeToken( Brick(), (5, 5) ) ) 
+    assert( g.frequencyHistogram()['Brick'] == 9 ) 
+
 
 # class Block( Token ):
 # class UnRook( Token )
@@ -332,3 +358,4 @@ if __name__ == '__main__':
     __joker_test()
     __bomb_test()
     __glob_test()
+    __brick_test()

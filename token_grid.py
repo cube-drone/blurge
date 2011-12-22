@@ -27,6 +27,19 @@ class TokenGrid( Grid ):
         if not self.get( x, y ).token:
             return
         self.get( x, y ).clear_token() 
+
+    def frequencyHistogram( self ):
+        """ Produce a dictionary of token names and token counts. """
+        histogram = {}
+        for point in self.points():
+            x, y = point
+            if self.get( x, y).token:
+                name = self.get(x,y).token.name()
+                if not name in histogram:
+                    histogram[name] = 0
+                histogram[name] += 1
+        return histogram
+                
     
     def isTokenAtPoint( self, token, point ): 
         """ Tests if this token exists at a point on the board. """ 
