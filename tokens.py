@@ -297,6 +297,24 @@ def __bomb_test():
 
     assert( not Rook().existsOnTheBoard( g ) )
 
+class Glob( Token ):
+    def name( self ):
+        return "Glob" 
+    def isValid( self, grid, point ):
+        if not self.existsOnTheBoard( grid ): 
+            return True
+        if self.atPointInList( grid, adjacentPoints( point ) ):
+            return True
+
+def __glob_test():
+    g = TokenGrid( 10, 10 )
+
+    assert( g.placeToken( Glob(), (5, 5) ) )
+    assert( g.placeToken( Glob(), (5, 6) ) )
+    assert( g.placeToken( Glob(), (5, 7) ) )
+    assert( g.placeToken( Glob(), (6, 8) ) )
+    assert( not g.placeToken( Glob(), (1,1) ) )
+
 # class Block( Token ):
 # class UnRook( Token )
 # class UnBishop( Token )
@@ -313,3 +331,4 @@ if __name__ == '__main__':
     __parasite_test()
     __joker_test()
     __bomb_test()
+    __glob_test()
