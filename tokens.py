@@ -1,4 +1,5 @@
 from token_grid import TokenGrid
+from grid import adjacentPoints, isDiagonalPoint
 from token_tiles import SingleTokenTile 
 
 class Token( object ):
@@ -7,7 +8,7 @@ class Token( object ):
 
     def isValid( self, grid, point ):
         """ Takes a grid object and a tuple point (x, y) """
-        return true
+        return True
     
     def afterPlacement( self, grid, point ):
         """ Called after the token is placed at a point. """
@@ -15,8 +16,8 @@ class Token( object ):
 
     def existsOnTheBoard( self, grid ):
         """ Returns True if this token exists anywhere on the grid. """
-        for grid_x, grid_y in grid.points():
-            if self.atPoint( grid, (grid_x, grid_y) ):
+        for point in grid.points():
+            if self.atPoint( grid, point ):
                 return True
         return False
 
@@ -53,8 +54,8 @@ class Checker( Token ):
 def __checker_test():
     g = TokenGrid(10, 10)
 
-    assert( not Checker().isValid( g, (0, 0) ))
-    assert(  Checker().isValid( g, (0, 1) ))
+    assert( not g.placeToken( Checker(), (0, 0 ) ) )
+    assert( g.placeToken( Checker(), (0, 1 ) ) )
     assert( not Checker().isValid( g, (0, 2) ))
     assert(  Checker().isValid( g, (0, 3) ))
     assert( not Checker().isValid( g, (0, 4) ))
@@ -173,15 +174,81 @@ def __pawn_test():
     assert( Pawn().isValid( g, (5, 6 ) ) )
     assert( not Pawn().isValid( g, ( 6, 6 ) ) )
 
-def King( Token ):
+class King( Token ):
     def name( self ):
         return "King"
     def isValid( self, grid, point ):
         """ A king cannot be placed adjacent to any other piece, nor can any other piece be placed adjacent to a king."""
-        x, y = point
+        if( grid.isAnyTokenAtPointInList( adjacentPoints( point ) ) ):
+            return False
+        return True 
+    
+    def afterPlacement( self, grid, point ):
+        """ Called after the token is placed at a point. """
+        
+        points = adjacentPoints( point )
+        for point in points:
+            grid.placeToken( InvisibleToken(), point )  
+
+        return self
+
+def __king_test():
+    g = TokenGrid( 10, 10 )
+    assert( King().isValid( g, (1,1 ) ) ) 
+    assert( g.placeToken( King(), (1, 1) ) ) 
+    assert( g.placeToken( King(), (5, 5) ) )
+    assert( not g.placeToken( King(), (5, 6) ) )
+    assert( not g.placeToken( King(), (6, 6) ) )
+    assert( not g.placeToken( King(), (0, 0) ) )
+
+class Bishop( Token ):
+    def name( self ):
+        return "Bishop" 
+    def isValid( self, grid, point ):
+        """ A bishop can only be placed diagonally to another Bishop. """
+        
+        # If there isn't a bishop on the board, there won't ever be a way to place one! 
+        if not self.existsOnTheBoard( grid ): 
+            return True
+        
+        for grid_x, grid_y in grid.points():
+            if isDiagonalPoint( point, (grid_x, grid_y) ):
+                if self.atPoint( grid, (grid_x, grid_y) ):
+                    return True
+             
+        return False
+
+def __bishop_test():
+    g = TokenGrid( 10, 10 )
+    assert( g.placeToken( Bishop(), (5, 5) ) )
+    assert( g.placeToken( Bishop(), (8, 8) ) )
+    assert( g.placeToken( Bishop(), (3, 7) ) )
+    assert( not g.placeToken( Bishop(), (1, 2 ) ) ) 
+
+class Parasite( Token ):
+    def name( self ):
+        return "Parasite" 
+    def isValid( self, grid, point ):
+        """ A parasite can be adjacent to any token but not another parasite. """
+        
+        adjacent_points = adjacentPoints( point ) 
+
+        if grid.isAnyTokenAtPointInList( adjacent_points ) and not self.atPointInList( grid, adjacent_points ):
+            return True
+        else:
+            return False
+
+def __parasite_test():
+    g = TokenGrid( 10, 10 )
+    assert( g.placeToken( Bishop(), (5, 5) ) )
+    assert( g.placeToken( Parasite(), (5, 6) ) )
+    assert( not g.placeToken( Parasite(), (6, 6) ) )
 
 if __name__ == '__main__':
     __checker_test()
     __rook_test()
     __knight_test()
     __pawn_test()
+    __king_test()
+    __bishop_test()
+    __parasite_test()

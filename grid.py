@@ -49,6 +49,32 @@ def line( n, thing ):
     """ Create and return an array containing just the one thing, again and again, n times. """
     return [copy.deepcopy(thing) for x in range(0, n)]
 
+def adjacentPoints( point ):
+    """ Return all points adjacent to the argument. """ 
+    x, y = point
+    return  [(x-1, y+1), (x, y+1), (x+1, y+1),
+             (x-1, y),             (x+1, y),
+             (x-1, y-1), (x, y-1), (x+1, y-1) ] 
+
+def isDiagonalPoint( point_one, point_two ):
+    """ Returns true if the two points are diagonal to one another. """
+    if point_one == point_two: 
+        return False
+
+    x1, y1 = point_one
+    x2, y2 = point_two
+    delta_x = x2 - x1
+    delta_y = y2 - y1
+    try:
+        slope = (delta_x * 1.0) / delta_y
+    except ZeroDivisionError:
+        return False
+    if 0.98 < slope < 1.02 or -0.98 > slope > -1.02:
+        return True
+    else:
+        return False
+
+
 class __test_mock_tile:
     def __init__(self):
         self.content = "."
