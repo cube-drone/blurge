@@ -340,12 +340,9 @@ def __brick_test():
     assert( g.placeToken( Brick(), (5, 5) ) ) 
     assert( g.frequencyHistogram()['Brick'] == 9 ) 
 
-
-# class Block( Token ):
+# class Wallflower( Token ):
 # class UnRook( Token )
 # class UnBishop( Token )
-# class Glob( Token )
-# class 
 
 if __name__ == '__main__':
     __checker_test()
