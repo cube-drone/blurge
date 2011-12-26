@@ -1,6 +1,7 @@
 from token_grid import TokenGrid
 from grid import adjacentPoints, isDiagonalPoint
 from token_tiles import SingleTokenTile 
+import copy
 import random
 
 class Token( object ):
@@ -89,8 +90,7 @@ class Rook( Token ):
 def __rook_test():
     g = TokenGrid(10, 10)
     
-    assert( Rook().isValid( g, (3, 3 ) ) )
-    g.get( 3, 3 ).token = Rook()
+    assert( g.placeToken( Rook(), (3,3) ) )
     
     assert( Rook().isValid( g, (3, 1 ) ) )
     assert( Rook().isValid( g, (3, 7 ) ) )
@@ -124,8 +124,7 @@ class Knight( Token ):
 def __knight_test():
     g = TokenGrid(10, 10)
     
-    assert( Knight().isValid( g, (5, 5 ) ) )
-    g.get( 5, 5 ).token = Knight()
+    assert( g.placeToken( Knight(), (5, 5) ) ) 
     
     assert( Knight().isValid( g, (7, 6 ) ) )
     assert( Knight().isValid( g, (6, 7 ) ) )
@@ -133,7 +132,7 @@ def __knight_test():
     assert( Knight().isValid( g, (7, 4 ) ) )
     assert( not Knight().isValid( g, (3, 5) ) )
 
-    g.get( 9, 9 ).token = Knight()
+    g.setToken( Knight(), (9, 9 ) )  
     assert( Knight().isValid( g, (7, 8) ) )
     assert( not Knight().isValid( g, (7, 7) ) )
 
@@ -159,8 +158,7 @@ class Pawn( Token ):
 def __pawn_test():
     g = TokenGrid(10, 10)
     
-    assert( Knight().isValid( g, (5, 5 ) ) )
-    g.get( 5, 5 ).token = Knight()
+    assert( g.placeToken( Knight(), (5,5) ) ) 
     
     assert( Pawn().isValid( g, (5, 6 ) ) )
     assert( Pawn().isValid( g, (6, 5 ) ) )
@@ -168,7 +166,7 @@ def __pawn_test():
     assert( Pawn().isValid( g, (5, 4 ) ) )
     assert( not Pawn().isValid( g, (3, 5) ) )
 
-    g.get( 6, 5 ).token = Pawn()
+    assert( g.placeToken( Pawn(), (6,5 ) ) )
     assert( Pawn().isValid( g, (7, 6 ) ) )
     assert( Pawn().isValid( g, (5, 4 ) ) )
     assert( Pawn().isValid( g, (7, 4 ) ) )
@@ -189,7 +187,7 @@ class King( Token ):
         
         points = adjacentPoints( point )
         for point in points:
-            grid.placeToken( InvisibleToken(), point )  
+            grid.setToken( InvisibleToken(), point )  
 
         return self
 
@@ -251,7 +249,7 @@ class Joker( Token ):
         return "Joker" 
     def isValid( self, grid, point ):
         """ No pattern here. Randomness. """
-        return random.choice( [ True, False, False ] ) 
+        return random.choice( [ True, False ] ) 
 
 def __joker_test():
     g = TokenGrid( 100, 10 )
@@ -331,7 +329,7 @@ class Brick( Token ):
         points = adjacentPoints( point )
         for brick_point in points:
             x,y = brick_point
-            grid.get(x,y).token = Brick()
+            grid.setToken( Brick(), (x,y) )
 
         return self
 
@@ -343,6 +341,38 @@ def __brick_test():
 # class Wallflower( Token ):
 # class UnRook( Token )
 # class UnBishop( Token )
+
+tokens = [ 
+            Checker(), 
+            Rook(), 
+            Knight(), 
+            Pawn(), 
+            King(), 
+            Bishop(),
+            Parasite(),
+            Joker(),
+            Bomb(),
+            Glob(),
+            Brick() ]
+
+def selectRandomToken():
+    return random.choice( tokens )
+
+def selectRandomNTokens( n ):
+    if n >= len( tokens ):
+        return copy.deepcopy( tokens )
+    if n <= 0:
+        return [] # and, also, what? 
+    random_tokens = []
+    selection_space = copy.deepcopy( tokens )
+    for i in range(0, n ):
+        temp_token =  random.choice( selection_space )
+        random_tokens.append( temp_token )
+        selection_space.remove( temp_token )
+    return random_tokens 
+
+def __random_token_test():
+    print selectRandomNTokens( 5 )
 
 if __name__ == '__main__':
     __checker_test()
@@ -356,3 +386,5 @@ if __name__ == '__main__':
     __bomb_test()
     __glob_test()
     __brick_test()
+
+    __random_token_test()

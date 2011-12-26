@@ -19,6 +19,11 @@ class TokenGrid( Grid ):
         token.afterPlacement( self, point )  
         return True
 
+    def setToken( self, token, point ):
+        """ Like 'placetoken' but without validation or the afterPlacement call. """
+        x, y = point
+        self.get(x,y).token = token
+
     def clearToken( self, point ):
         """ Remove a token from a point on the grid. """
         x, y = point
