@@ -132,7 +132,7 @@ def __knight_test():
     assert( Knight().isValid( g, (7, 4 ) ) )
     assert( not Knight().isValid( g, (3, 5) ) )
 
-    g.setToken( Knight(), (9, 9 ) )  
+    g.setToken( Knight(), (9, 9 )  ) 
     assert( Knight().isValid( g, (7, 8) ) )
     assert( not Knight().isValid( g, (7, 7) ) )
 
@@ -141,14 +141,16 @@ class Pawn( Token ):
         return "Pawn"
     def isValid( self, grid, point):
         """ A pawn can be placed adjacent to any other piece, or diagonal to any other pawn. """ 
+        
+        if not self.existsOnTheBoard( grid ): 
+            return True
+        
         x, y = point
         token_locations = [ (x+1, y), (x, y+1), (x-1, y), (x, y-1) ] 
         pawn_locations = [ (x+1, y+1), (x+1, y-1), (x-1, y+1), (x-1, y-1) ]
 
         if self.atPointInList( grid, pawn_locations ):
             return True
-
-        
 
         for token_point in token_locations:
             tx, ty = token_point
@@ -230,6 +232,9 @@ class Parasite( Token ):
     def isValid( self, grid, point ):
         """ A parasite can be adjacent to any token but not another parasite. """
         
+        if not self.existsOnTheBoard( grid ): 
+            return True
+        
         adjacent_points = adjacentPoints( point ) 
 
         if grid.isAnyTokenAtPointInList( adjacent_points ) and not self.atPointInList( grid, adjacent_points ):
@@ -272,10 +277,9 @@ class Bomb( Token ):
 
     def afterPlacement( self, grid, point ):
         """ Called after the token is placed at a point. """
-        
         points = adjacentPoints( point )
         for point in points:
-            grid.clearToken( point )  
+            grid.clearToken( point )
 
         return self
 
@@ -350,8 +354,8 @@ tokens = [
             King(), 
             Bishop(),
             Parasite(),
-            Joker(),
-            Bomb(),
+            Joker(),   # Doesn't work with our automated solution algorithm
+            Bomb(),    # Doesn't work with our automated solution algorithm
             Glob(),
             Brick() ]
 
