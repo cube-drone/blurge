@@ -10,7 +10,7 @@ class Game( object ):
         self.tokens = tokens.selectRandomNTokens( ntokens )  
         self.laziness = 30
         self.numberOfInitialTokens = 100
-
+            
         # Initialize Board
         if gametype == "Clear":
             pass
@@ -76,7 +76,15 @@ class Game( object ):
             print "Somehow our valid placement is not valid - ", point
             print self.grid.error
             return self.autoplayOneTurn( )
-        
+ 
+    def get_last_delta( self ):
+        pass
+    
+    def get_current_state( self ):
+        pass
+    
+    def attempt_move( self, scrambled_token, point ):
+        pass
 
 if __name__ == '__main__':
     g = Game( 10, 10, "Solution", 10)

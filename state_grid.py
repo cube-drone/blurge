@@ -72,8 +72,16 @@ class StateGrid( TokenGrid ):
     def applyMove( self, move ):
         movecounter, movename, token, point = move
         if movename == 'placeToken':
-            self.placeToken( token, point )
+            self.setToken( token, point )
         if movename == 'setToken':
             self.setToken( token, point ) 
         if movename == 'clearToken':
             self.clearToken( point ) 
+    
+    def serialize( self ):
+        pass
+    def unserialize( self ):
+        pass
+    def client_serialize( self ):
+        pass
+
