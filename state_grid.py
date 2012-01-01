@@ -79,8 +79,8 @@ class StateGrid( TokenGrid ):
             self.clearToken( point ) 
     
     def serialize( self ):
-        pass
-    def unserialize( self ):
+        return self.moves
+    def unserialize( self, moves ):
         pass
     def client_serialize( self ):
         pass

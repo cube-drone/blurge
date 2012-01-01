@@ -5,7 +5,7 @@ import random
 import copy
 
 class Game( object ):
-    def __init__( self, width, height, gametype, ntokens):
+    def generate( self, width, height, gametype, ntokens):
         self.grid = TokenGrid( width, height )
         self.tokens = tokens.selectRandomNTokens( ntokens )  
         self.laziness = 30
@@ -87,7 +87,8 @@ class Game( object ):
         pass
 
 if __name__ == '__main__':
-    g = Game( 10, 10, "Solution", 10)
+    g = Game()
+    g.generate( 10, 10, "Solution", 10)
     print g.grid
     for counter, move, token, point in g.grid.moves:
         print counter, move, token.name(), point

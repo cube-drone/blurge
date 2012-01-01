@@ -7,7 +7,7 @@ class TokenGrid( Grid ):
         self.error = ""
 
     def placeValidation( self, token, point ):
-    """ Determine if token can be placed at point. """
+        """ Determine if token can be placed at point. """
         x, y = point
         if not self.get( x, y ):
             self.error = "Point ", (x,y), " doesn't exist"
