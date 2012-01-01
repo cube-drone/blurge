@@ -5,6 +5,11 @@ import random
 import copy
 
 class Game( object ):
+    
+    def generate( self, mongo_id ):
+        self.grid = TokenGrid( width, height )
+        pass
+
     def generate( self, width, height, gametype, ntokens):
         self.grid = TokenGrid( width, height )
         self.tokens = tokens.selectRandomNTokens( ntokens )  
@@ -22,6 +27,9 @@ class Game( object ):
             self.ten_turns_in()
 
         self.selectValidToken()
+    
+    def save( self, mongo_id = 0):
+        pass
     
     def ten_turns_in( self ):
         for i in range( 0, 10 ):
