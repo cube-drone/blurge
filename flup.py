@@ -1,5 +1,6 @@
 
-from token_grid import TokenGrid
+from state_grid import StateGrid as TokenGrid
+#from token_grid import TokenGrid
 import tokens
 import random
 import copy
@@ -34,14 +35,14 @@ class Game( object ):
         self.currentToken = token
     
     def completelySolve( self ):
-        while( self.solveOneStep( ) ):
+        while  self.autoplayOneTurn( ) :
             pass
     
     def solveForToken( self, token ):
         """ Returns all valid placements for the token. """ 
         valid_placements = [] 
         for point in self.grid.points():
-            if test_token.isValid( self.grid, point) and not self.grid.isAnyTokenAtPoint( point ):
+            if token.isValid( self.grid, point) and not self.grid.isAnyTokenAtPoint( point ):
                 valid_placements.append( point )
             if len( valid_placements ) > self.laziness:
                 break
@@ -60,10 +61,14 @@ class Game( object ):
             return self.solveOneStep( temp_tokens )
 
         place_point = random.choice(valid_placements)
+        print test_token.name(), place_point
         return ( test_token, place_point ) 
 
     def autoplayOneTurn( self ): 
-        token, point = self.solveOneStep( self )
+        token_point = self.solveOneStep()
+        if not token_point:
+            return False
+        token, point = token_point
         if self.grid.placeToken( token, point ):
             return True
         else:
@@ -75,3 +80,5 @@ class Game( object ):
 if __name__ == '__main__':
     g = Game( 10, 10, "Solution", 10)
     print g.grid
+    for counter, move, token, point in g.grid.moves:
+        print counter, move, token.name(), point

@@ -277,6 +277,7 @@ class Bomb( Token ):
 
     def afterPlacement( self, grid, point ):
         """ Called after the token is placed at a point. """
+        print "BOOM!"
         points = adjacentPoints( point )
         for point in points:
             grid.clearToken( point )
@@ -354,7 +355,7 @@ tokens = [
             King(), 
             Bishop(),
             Parasite(),
-            Joker(),   # Doesn't work with our automated solution algorithm
+            #Joker(),   # Doesn't work with our automated solution algorithm
             Bomb(),    # Doesn't work with our automated solution algorithm
             Glob(),
             Brick() ]

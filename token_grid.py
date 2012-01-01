@@ -5,9 +5,8 @@ class TokenGrid( Grid ):
     def __init__(self, width, height):
         super( TokenGrid, self ).__init__( width, height, SingleTokenTile() )
         self.error = ""
-    
-    def placeToken( self, token, point ):
-        """ Attempt to place token at point on the grid. Returns True on success and False on failure. """
+
+    def placeValidation( self, token, point ):
         x, y = point
         if not self.get( x, y ):
             self.error = "Point ", (x,y), " doesn't exist"
@@ -18,10 +17,17 @@ class TokenGrid( Grid ):
         if not token.isValid( self, point ): 
             self.error = "Point ", (x,y), " already contains token: ", token.name()
             return False 
-        
-        self.get(x,y).token = token
-        token.afterPlacement( self, point )  
         return True
+    
+    def placeToken( self, token, point ):
+        """ Attempt to place token at point on the grid. Returns True on success and False on failure. """
+        x, y = point
+        if self.placeValidation( token, point): 
+            self.get(x,y).token = token
+            token.afterPlacement( self, point )  
+            return True
+        else:
+            return False
 
     def setToken( self, token, point ):
         """ Like 'placetoken' but without validation or the afterPlacement call. """
@@ -31,15 +37,17 @@ class TokenGrid( Grid ):
         if self.get(x, y) and self.get( x,y).token:
             return False
         self.get(x,y).token = token
+        return True
 
     def clearToken( self, point ):
         """ Remove a token from a point on the grid. """
         x, y = point
         if not self.get( x, y ):
-            return 
+            return False 
         if not self.get( x, y ).token:
-            return
+            return False
         self.get( x, y ).clear_token() 
+        return True
 
     def frequencyHistogram( self ):
         """ Produce a dictionary of token names and token counts. """
@@ -52,8 +60,7 @@ class TokenGrid( Grid ):
                     histogram[name] = 0
                 histogram[name] += 1
         return histogram
-                
-    
+
     def isTokenAtPoint( self, token, point ): 
         """ Tests if this token exists at a point on the board. """ 
         x, y = point
