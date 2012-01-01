@@ -18,7 +18,7 @@ class Game( object ):
             gametype - "Clear", "Solution", or "Default" 
             ntokens - the number of different token types to use
             nturns - the number of turns to pre-play in a Default game, OR
-                     the numver of turns to rewind in a Solution game
+                     the number of turns to rewind in a Solution game
         """
         self.grid = Grid( width, height )
         self.tokens = tokens.selectRandomNTokens( ntokens )  
