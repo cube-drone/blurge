@@ -47,7 +47,7 @@ class StateGrid( TokenGrid ):
             setToken and clearToken happen as a result of a placetoken. """ 
         
         while len(self.moves) > 0:
-            movecounter, movename, token, point = self.moves[ len(self.moves) ] 
+            movecounter, movename, token, point = self.moves[ len(self.moves)-1 ] 
             if( movename != 'placeToken' ):
                 self.rewindLastMove()
             else:

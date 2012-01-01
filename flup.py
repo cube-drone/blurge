@@ -1,6 +1,5 @@
 
 from state_grid import StateGrid as TokenGrid
-#from token_grid import TokenGrid
 import tokens
 import random
 import copy
@@ -17,6 +16,8 @@ class Game( object ):
             pass
         elif gametype == "Solution":
             self.completelySolve()
+            for i in range(0, 10):
+                self.grid.rewindLastFullMove()  
         else: #default gametype
             self.ten_turns_in()
 
