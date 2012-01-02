@@ -83,8 +83,7 @@ class Game( object ):
         if self.mongo_id == 0:
             self.mongo_id = self.games_database().insert( document )
         else:
-            document['_id'] = self.mongo_id 
-            self.games_database().update( document ) 
+            self.games_database().update({'_id':self.mongo_id},{'$set':document}) 
 
     def games_database( self ):
         connection = Connection()  

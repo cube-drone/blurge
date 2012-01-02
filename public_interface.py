@@ -57,5 +57,15 @@ if __name__ == '__main__':
     mongo_id = start_game()
     state = get_complete_state(mongo_id)
     update = get_update( mongo_id, -1 )
-    gamestate = get_gamestate( mongo_id )  
-    # now how the hell do I test making a move? 
+    gamestate = get_gamestate( mongo_id )
+    
+    lastmove = update[ len( update ) -1 ] 
+    counter, blah, blor, blop = lastmove
+    
+    g = load_game( mongo_id )
+    token, point = g.solveOneStep([g.deobfuscateToken(state[u'currentToken'])])
+    print "Attempting to play ", token.name(), " at point ", point  
+    print 
+    print attempt_move( mongo_id, g.obfuscateToken( token ), point, counter) 
+    print 
+    print get_update( mongo_id, counter ) 
