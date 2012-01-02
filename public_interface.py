@@ -16,9 +16,12 @@ def load_game( mongo_id ):
 def get_complete_state( mongo_id ): 
     g = load_game( mongo_id ) 
     return_object = { 
+        u'width': g.width,
+        u'height': g.height, 
         u'moves': [ obfuscate_move( move, g) for move in g.grid.moves ],
         u'currentToken': g.obfuscateToken( g.currentToken ),
-        u'tokens': [ g.obfuscateToken( token) for token in g.tokens ]  
+        u'tokens': [ g.obfuscateToken( token) for token in g.tokens ], 
+        u'gamestate': g.gamestate
     } 
     return return_object 
 

@@ -111,6 +111,3 @@ if __name__ == "__main__":
 
     if not counter == 50:
         raise errors.Hell( "grid.all() should produce 50 outputs." ) 
-
-    
-    
