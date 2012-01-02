@@ -10,6 +10,10 @@ import tokens
 import random
 import copy
 
+obfuscator = [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+"N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2",
+"3", "4", "5", "6", "7", "8", "9" ]
+
 class Game( object ):
     """ The core game object.
         The game object must be generate()d or load()ed before any further
@@ -78,9 +82,10 @@ class Game( object ):
                     "grid": self.grid.serialize() }  
         if self.mongo_id == 0:
             self.mongo_id = self.games_database().insert( document )
-        
-        pass
-    
+        else:
+            document['_id'] = self.mongo_id 
+            self.games_database().update( document ) 
+
     def games_database( self ):
         connection = Connection()  
         db = connection.flup_database
@@ -100,7 +105,6 @@ class Game( object ):
         self.completelySolve()
         for i in range(0, self.nturns):
             self.grid.rewindLastFullMove()  
-    
     
     def selectValidToken( self ):
         """ Set a verifiably playable token to the current token. """
@@ -163,6 +167,22 @@ class Game( object ):
         # print test_token.name(), place_point
         return ( test_token, place_point ) 
     
+    def obfuscateToken( self, token ):
+        """ Obfuscate the token using the current set of obfuscation rules. """
+        for i in range( 0, len(self.tokens) - 1 ):
+            if self.tokens[i].name() == token.name():
+                return obfuscator[i] 
+    
+    def deobfuscateToken( self, fustulated_token ):
+        """ Fix the token. """
+        for i in range( 0, len(obfuscator) - 1 ):
+            if fustulated_token == obfuscator[i]:
+                return self.tokens[i]
+    
+    def attemptMove( self, token, point ):
+        self.selectValidToken()
+        return self.grid.placeToken( token, point )
+    
     def __repr__(self):
         ret = ""
         ret += str(self.grid) + "\n" 
@@ -175,16 +195,7 @@ class Game( object ):
         ret += "Game State: " + self.gamestate + "\n" 
         return ret 
 
-    def get_last_delta( self ):
-        pass
-    
-    def get_current_state( self ):
-        pass
-    
-    def attempt_move( self, scrambled_token, point ):
-        pass
-
-if __name__ == '__main__':
+def __test_generate_save_and_load():
     g = Game()
     g.generate( 10, 10, "Solution", 10)
     g.save()
@@ -192,6 +203,16 @@ if __name__ == '__main__':
     
     m = Game()
     m.mongo_id = mongo_id
-    #g.mongo_id ='4f00dda41d41c84202000000' 
     m.load()
-    print m
+    print m 
+
+def __test_obfuscation():
+    g = Game()
+    g.generate( 10, 10, "Default", 15)
+    obfuscated_token = g.obfuscateToken( tokens.Joker() )
+    original_token = g.deobfuscateToken( obfuscated_token ) 
+    assert( original_token.name() == tokens.Joker().name() )
+
+if __name__ == '__main__':
+    __test_generate_save_and_load() 
+    __test_obfuscation()

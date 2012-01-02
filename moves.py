@@ -13,3 +13,7 @@ def serialize_move( move ):
 def unserialize_move( move ):
     movecounter, movename, token, point = move
     return ( movecounter, movename, tokens.deserialize( token ), point ) 
+
+def obfuscate_move( move, game ):
+    movecounter, movename, token, point = move
+    return ( movecounter, movename, game.obfuscateToken( token ), point ) 

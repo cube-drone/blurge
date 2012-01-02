@@ -85,3 +85,9 @@ class StateGrid( TokenGrid ):
     def unserialize( self, moves ):
         for move in moves: 
             self.applyMove( unserialize_move( move ) )
+    
+    def lastMoveCounter( self ):
+        if len( self.moves) == 0:
+            return -1 
+        movecounter, movename, token, point = self.moves[ len(self.moves)-1 ] 
+        return movecounter 
