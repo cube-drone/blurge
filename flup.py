@@ -1,5 +1,6 @@
 # External Libraries
-from pymongo import Collection
+from pymongo import Connection
+from bson import ObjectId
 
 # Local Libraries
 from state_grid import StateGrid as Grid
@@ -10,6 +11,10 @@ import random
 import copy
 
 class Game( object ):
+    """ The core game object.
+        The game object must be generate()d or load()ed before any further
+        operations are performed on it. 
+    """
     
     def generate( self, width=10, height=10, gametype="Default", ntokens=8,
                     nturns=10):
@@ -20,29 +25,66 @@ class Game( object ):
             nturns - the number of turns to pre-play in a Default game, OR
                      the number of turns to rewind in a Solution game
         """
+        self.width = width
+        self.height = height
         self.grid = Grid( width, height )
         self.tokens = tokens.selectRandomNTokens( ntokens )  
         self.nturns = nturns
         self.laziness = 30 #If we've already found 30 solutions, stop looking. 
         self.gamestate = "Playable" # "Playable" || "Unplayable" 
+        self.mongo_id = 0 #The mongo_db id of this game record. 
+        self.gametype = gametype
+        # This isn't valid, but should be overwritten by the 
+        # self.selectValidToken() call. 
+        self.currentToken = tokens.InvisibleToken() 
+        
+        print self.tokens
             
         # Initialize Board
-        if gametype == "Clear":
+        if self.gametype == "Clear":
             self.setup_clear_game()
-        elif gametype == "Solution":
+        elif self.gametype == "Solution":
             self.setup_solution_game()
         else:
             self.setup_default_game()
 
         self.selectValidToken()
-        self.save()
     
-    def load( self, mongo_id ):
-        self.grid = Grid( width, height )
+    def load( self ):
+        mongo_object = self.games_database().find_one({u'_id':
+                                        ObjectId(self.mongo_id)} ) 
+        self.width = int(mongo_object[u'width'])
+        self.height = int(mongo_object[u'height']) 
+        self.grid = Grid( self.width, self.height )
+        self.tokens = [ tokens.deserialize( token ) for token in
+                                mongo_object[u'tokens'] ] 
+        self.currentToken = tokens.deserialize( mongo_object[u'currentToken'] )
+        self.laziness = mongo_object[u'laziness']
+        self.gametype = mongo_object[u'gametype']
+        self.gamestate = mongo_object[u'gamestate']
+        
+        self.grid.unserialize( mongo_object[u'grid'] )
         pass
     
-    def save( self, mongo_id = 0):
+    def save( self):
+        """ Save the entirety of the game state to mongodb. """
+        document = {"width": self.width, 
+                    "height": self.height, 
+                    "laziness": self.laziness, 
+                    "gamestate": self.gamestate,
+                    "gametype": self.gametype,
+                    "tokens" : [ token.serialize() for token in self.tokens ],  
+                    "currentToken": self.currentToken.serialize(),
+                    "grid": self.grid.serialize() }  
+        if self.mongo_id == 0:
+            self.mongo_id = self.games_database().insert( document )
+        
         pass
+    
+    def games_database( self ):
+        connection = Connection()  
+        db = connection.flup_database
+        return db.games
     
     def setup_default_game( self ):
         """ In a Default game, we play n turns for the player. """
@@ -71,13 +113,14 @@ class Game( object ):
     
     def completelySolve( self ):
         """ Completely solve the game. (Currently brute-force and non-optimal) """
-        while self.autoplayOneTurn( ) :
+        while self.autoplayOneTurn():
             pass
     
     def autoplayOneTurn( self ): 
         """ Completely play one turn for the player. """
         token_point = self.solveOneStep()
         if not token_point:
+            print "Solution complete. "
             return False
         token, point = token_point
         if self.grid.placeToken( token, point ):
@@ -88,17 +131,23 @@ class Game( object ):
             return self.autoplayOneTurn( )
 
     def solveOneStep( self, temp_tokens = [] ):
-        """ Return the solution to one step of the game. """ 
+        """ Return the solution to one step of the game, 
+            as a tuple (token, point).  """ 
         if temp_tokens == []:
             temp_tokens = copy.deepcopy( self.tokens ) 
+        #print "Solving one step with tokens ", temp_tokens 
         test_token = random.choice( temp_tokens )
+        #print "Attempting", test_token.name()
         
         valid_placements = self.solveForToken( test_token ) 
+        #print "Valid Placements: ", valid_placements
         if len(valid_placements) == 0 and len(temp_tokens) <= 1:
+            #print "No valid placements for ", test_token.name()
             return False
         if len(valid_placements) == 0:
             temp_tokens.remove( test_token )
             return self.solveOneStep( temp_tokens )
+        return (test_token, random.choice(valid_placements) )
     
     def solveForToken( self, token ):
         """ Returns all valid placements for the token. """ 
@@ -111,8 +160,20 @@ class Game( object ):
         return valid_placements
 
         place_point = random.choice(valid_placements)
-        print test_token.name(), place_point
+        # print test_token.name(), place_point
         return ( test_token, place_point ) 
+    
+    def __repr__(self):
+        ret = ""
+        ret += str(self.grid) + "\n" 
+        ret += "\n"
+        ret += "Current Token: " + self.currentToken.name() + "\n"
+        ret += "\n"
+        ret += "Tokens in Play: \n" 
+        for token in self.tokens: 
+            ret += "\t" + token.name() + "\n" 
+        ret += "Game State: " + self.gamestate + "\n" 
+        return ret 
 
     def get_last_delta( self ):
         pass
@@ -126,6 +187,11 @@ class Game( object ):
 if __name__ == '__main__':
     g = Game()
     g.generate( 10, 10, "Solution", 10)
-    print g.grid
-    for counter, move, token, point in g.grid.moves:
-        print counter, move, token.name(), point
+    g.save()
+    mongo_id = g.mongo_id 
+    
+    m = Game()
+    m.mongo_id = mongo_id
+    #g.mongo_id ='4f00dda41d41c84202000000' 
+    m.load()
+    print m

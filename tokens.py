@@ -6,7 +6,7 @@ import random
 
 class Token( object ):
     def name( self ):
-        return "Token"
+        return u"Token"
 
     def isValid( self, grid, point ):
         """ Takes a grid object and a tuple point (x, y) """
@@ -33,14 +33,18 @@ class Token( object ):
 
     def __repr__(self):
         return self.name()[0]
+    
+    def serialize(self): 
+        return { 'name':self.name() }
+
 
 class InvisibleToken( Token ):
     def name( self ):
-        return "InvisibleToken" 
+        return u"InvisibleToken" 
 
 class Checker( Token ):
     def name( self ):
-        return "Checker" 
+        return u"Checker" 
 
     def isValid( self, grid, point ):
         """ When x is odd, y must be even. When x is even, y must be odd. """
@@ -69,7 +73,7 @@ def __checker_test():
 
 class Rook( Token ):
     def name( self ):
-        return "Rook" 
+        return u"Rook" 
     def isValid( self, grid, point):
         """ Object must be horizontal or vertical to another rook. """
         
@@ -101,7 +105,7 @@ def __rook_test():
 
 class Knight( Token ):
     def name( self ):
-        return "Knight" 
+        return u"Knight" 
     def isValid( self, grid, point):
         """ Object must be two-up-and-one-over in any direction to another knight. """
         
@@ -138,7 +142,7 @@ def __knight_test():
 
 class Pawn( Token ):
     def name( self ):
-        return "Pawn"
+        return u"Pawn"
     def isValid( self, grid, point):
         """ A pawn can be placed adjacent to any other piece, or diagonal to any other pawn. """ 
         
@@ -159,14 +163,13 @@ class Pawn( Token ):
 
 def __pawn_test():
     g = TokenGrid(10, 10)
-    
+ 
     assert( g.placeToken( Knight(), (5,5) ) ) 
     
     assert( Pawn().isValid( g, (5, 6 ) ) )
     assert( Pawn().isValid( g, (6, 5 ) ) )
     assert( Pawn().isValid( g, (4, 5 ) ) )
     assert( Pawn().isValid( g, (5, 4 ) ) )
-    assert( not Pawn().isValid( g, (3, 5) ) )
 
     assert( g.placeToken( Pawn(), (6,5 ) ) )
     assert( Pawn().isValid( g, (7, 6 ) ) )
@@ -177,7 +180,7 @@ def __pawn_test():
 
 class King( Token ):
     def name( self ):
-        return "King"
+        return u"King"
     def isValid( self, grid, point ):
         """ A king cannot be placed adjacent to any other piece, nor can any other piece be placed adjacent to a king."""
         if( grid.isAnyTokenAtPointInList( adjacentPoints( point ) ) ):
@@ -204,7 +207,7 @@ def __king_test():
 
 class Bishop( Token ):
     def name( self ):
-        return "Bishop" 
+        return u"Bishop" 
     def isValid( self, grid, point ):
         """ A bishop can only be placed diagonally to another Bishop. """
         
@@ -228,7 +231,7 @@ def __bishop_test():
 
 class Parasite( Token ):
     def name( self ):
-        return "Parasite" 
+        return u"Parasite" 
     def isValid( self, grid, point ):
         """ A parasite can be adjacent to any token but not another parasite. """
         
@@ -251,7 +254,7 @@ def __parasite_test():
 
 class Joker( Token ):
     def name( self ):
-        return "Joker" 
+        return u"Joker" 
     def isValid( self, grid, point ):
         """ No pattern here. Randomness. """
         return random.choice( [ True, False ] ) 
@@ -271,13 +274,11 @@ def __joker_test():
 
 class Bomb( Token ):
     def name( self ):
-        return "Bomb"
+        return u"Bomb"
     def isValid( self, grid, point ):
         return True
-
     def afterPlacement( self, grid, point ):
         """ Called after the token is placed at a point. """
-        print "BOOM!"
         points = adjacentPoints( point )
         for point in points:
             grid.clearToken( point )
@@ -302,7 +303,7 @@ def __bomb_test():
 
 class Glob( Token ):
     def name( self ):
-        return "Glob" 
+        return u"Glob" 
     def isValid( self, grid, point ):
         if not self.existsOnTheBoard( grid ): 
             return True
@@ -321,7 +322,7 @@ def __glob_test():
 
 class Brick( Token ):
     def name( self ):
-        return "Brick"
+        return u"Brick"
     def isValid( self, grid, point ):
         """ A brick cannot be placed adjacent to any piece. """
         if( grid.isAnyTokenAtPointInList( adjacentPoints( point ) ) ):
@@ -341,43 +342,58 @@ class Brick( Token ):
 def __brick_test():
     g = TokenGrid( 10, 10 )
     assert( g.placeToken( Brick(), (5, 5) ) ) 
-    assert( g.frequencyHistogram()['Brick'] == 9 ) 
+    assert( g.frequencyHistogram()[Brick().name()] == 9 ) 
 
 # class Wallflower( Token ):
 # class UnRook( Token )
 # class UnBishop( Token )
 
-tokens = [ 
-            Checker(), 
-            Rook(), 
-            Knight(), 
-            Pawn(), 
-            King(), 
-            Bishop(),
-            Parasite(),
-            #Joker(),   # Doesn't work with our automated solution algorithm
-            Bomb(),    # Doesn't work with our automated solution algorithm
-            Glob(),
-            Brick() ]
+token_dict = {  Checker().name(): Checker(), 
+            Rook().name(): Rook(), 
+            Knight().name(): Knight(), 
+            Pawn().name(): Pawn(), 
+            King().name(): King(), 
+            Bishop().name(): Bishop(),
+            Parasite().name(): Parasite(),
+            Joker().name(): Joker(),   # Doesn't work well with our automated solution algorithm
+            Bomb().name(): Bomb(),    # Doesn't work well with our automated solution algorithm
+            Glob().name(): Glob(),
+            Brick().name(): Brick(),
+            InvisibleToken().name(): InvisibleToken() } 
+
+token_array = [value for key, value in token_dict.iteritems()] 
 
 def selectRandomToken():
     return random.choice( tokens )
 
 def selectRandomNTokens( n ):
-    if n >= len( tokens ):
-        return copy.deepcopy( tokens )
-    if n <= 0:
-        return [] # and, also, what? 
+    if n >= len( token_array ):
+        return copy.deepcopy( token_array )
+    if n <= 0:  # We can't return less than zero tokens. 
+        return [] 
     random_tokens = []
-    selection_space = copy.deepcopy( tokens )
+    selection_space = copy.deepcopy( token_array )
+    # Always remove Invisible Token from selection space. 
+    # If n <= 5, remove Bomb, Joker from selection space. 
+    for token in selection_space: 
+        if token.name() == InvisibleToken().name():
+            selection_space.remove(token) 
+        if n < 5:
+            if token.name() == Joker().name() or token.name() == Bomb().name():
+                selection_space.remove(token) 
+    # Select and return n tokens.  
     for i in range(0, n ):
-        temp_token =  random.choice( selection_space )
+        temp_token =  random.choice( selection_space)
         random_tokens.append( temp_token )
         selection_space.remove( temp_token )
     return random_tokens 
 
 def __random_token_test():
     print selectRandomNTokens( 5 )
+
+def deserialize( token_object ):
+    name = token_object[u'name'] 
+    return token_dict[name] 
 
 if __name__ == '__main__':
     __checker_test()
