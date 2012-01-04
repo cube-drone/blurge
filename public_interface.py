@@ -21,6 +21,7 @@ def get_complete_state( mongo_id ):
         u'moves': [ obfuscate_move( move, g) for move in g.grid.moves ],
         u'currentToken': g.obfuscateToken( g.currentToken ),
         u'tokens': [ g.obfuscateToken( token) for token in g.tokens ], 
+        #u'tokens': [ token.name() for token in g.tokens ],
         u'gamestate': g.gamestate
     } 
     return return_object 
