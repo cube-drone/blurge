@@ -24,7 +24,7 @@
             for( var j = 0; j < y; j++)
             {
                 var background_color = counter % 2 == 0 ? 'blue' : 'pink';
-                cube_grid += "<td style='height:"+size+"px; width:"+size+"px; background-color:"+background_color+";' ></td>";
+                cube_grid += "<td class='x_"+j+" y_"+(y-i-1)+"' style='height:"+size+"px; width:"+size+"px; background-color:"+background_color+";' ></td>";
                 counter ++;
             }
             cube_grid += "</tr>";
