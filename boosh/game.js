@@ -2,8 +2,7 @@
 var setup = function( gamestate )
 {
     console.log( gamestate )
-    cube_grid(".cube_grid", gamestate.height, gamestate.width, 50 )      
-
+    $(".cube_grid").grid( { x:gamestate.width, y:gamestate.height, size: 50 } ); 
 }
 
 $(document).ready(function() {

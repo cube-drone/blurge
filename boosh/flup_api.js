@@ -5,16 +5,16 @@ var flup = {
     
     do_function:function( function_name, args )
     {
-	args['function'] = function_name; 
+        args['function'] = function_name; 
 
         var success_callback = args.success_callback;
-	delete args.success_callback;
-	$.ajax({
-	  url: flup.server_address,
-	  dataType: 'jsonp',
-	  data: args,
-	  success: success_callback, 
-	});       
+        delete args.success_callback;
+        $.ajax({
+          url: flup.server_address,
+          dataType: 'jsonp',
+          data: args,
+          success: success_callback, 
+        });       
     },
     
     start_game:function( args )
