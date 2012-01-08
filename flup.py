@@ -41,8 +41,6 @@ class Game( object ):
         # This isn't valid, but should be overwritten by the 
         # self.selectValidToken() call. 
         self.currentToken = tokens.InvisibleToken() 
-        
-        print self.tokens
             
         # Initialize Board
         if self.gametype == "Clear":
@@ -168,7 +166,7 @@ class Game( object ):
     
     def obfuscateToken( self, token ):
         """ Obfuscate the token using the current set of obfuscation rules. """
-        for i in range( 0, len(self.tokens) - 1 ):
+        for i in range( 0, len(self.tokens) ):
             if self.tokens[i].name() == token.name():
                 return obfuscator[i] 
     
@@ -211,7 +209,10 @@ def __test_obfuscation():
     obfuscated_token = g.obfuscateToken( tokens.Joker() )
     original_token = g.deobfuscateToken( obfuscated_token ) 
     assert( original_token.name() == tokens.Joker().name() )
+    obfuscated_set = [ g.obfuscateToken( token ) for token in g.tokens ] 
+    assert( obfuscated_set[0] == "A" )
+    assert( obfuscated_set[-1] == "L" ) 
 
 if __name__ == '__main__':
-    __test_generate_save_and_load() 
+    #__test_generate_save_and_load() 
     __test_obfuscation()

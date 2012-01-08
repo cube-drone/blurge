@@ -5,7 +5,7 @@ def start_game( width=10, height=10, gametype="Default", ntokens=8, nturns=10):
     g = Game()
     g.generate( width, height, gametype, ntokens, nturns)
     g.save()
-    return g.mongo_id 
+    return str(g.mongo_id) 
 
 def load_game( mongo_id ):
     g = Game()

@@ -60,10 +60,13 @@ def simple_app(environ, start_response):
         response = str(e)
     
     #JSON encode the response.
-     
+    print functionname
+    print arguments
+ 
     status = '200 OK'
     response_headers = [('Content-type','application/json')]
     start_response(status, response_headers)
+    print response
     return [json.dumps( response, indent=4 )]
 
 httpd = make_server('', 8000, simple_app)
