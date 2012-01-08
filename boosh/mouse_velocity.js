@@ -54,6 +54,7 @@ $(document).ready(function() {
             {
                 return_velocity.direction = direction;
                 return_velocity.distance = Velocity.hypotamoose( direction.x_delta, direction.y_delta );
+                console.log( return_velocity.direction );
                 console.log( return_velocity.distance );
                 break;
             }
