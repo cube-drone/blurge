@@ -3,6 +3,7 @@ import public_interface
 import json
 
 master_arguments = {
+    'callback': lambda x: str(x),
     'mongo_id': lambda x: str(x),
     'last_move': lambda x: int(x),
     'width': lambda x: int(x),
@@ -11,20 +12,28 @@ master_arguments = {
     'nturns': lambda x: int(x),
     'ntokens': lambda x: int(x),
     'token': lambda x: str(x),
-    'point': lambda x: (int(x.split(',')[0]), int(x.split(',')[1]) )
+    'point': lambda x: (int(x.split(',')[0]), int(x.split(',')[1]) ),
+    'function': lambda x: str(x)
 }
+
+def wsgi_error(environ, start_response, error):
+    """ Returns an error. """
+    status = '400 BAD REQUEST'
+    response_headers = [('Content-type','text/plain')]
+    start_response(status, response_headers)
+    return [ error ] 
 
 def simple_app(environ, start_response):
     """ Functions set to the app come in the format: 
-        app:8000/removable/functionName/argumentName=arg/argumentName=arg...
+        :8080/?function=start_game&callback=awesome&arg1=blah ... 
         This app connects to the public_interface.py interface
         But provides HTTP management, JSON conversion, 
         boundary checking, and argument validation. 
     """
-    path = environ['PATH_INFO']
-    args = path.split("/")
-    functionname = args[1]
+    path = environ['QUERY_STRING']
+    args = path.split("&")
     string_arguments = filter( lambda x: len( x ) > 0 and x.count('=') > 0, args )
+
     arguments = {}
     for string_argument in string_arguments: 
         argument, value = string_argument.split("=")
@@ -33,8 +42,12 @@ def simple_app(environ, start_response):
         try:
             arguments[master_argument] = arg_function(arguments[master_argument])
         except:
-            arguments[master_argument] = ""
+            arguments[master_argument] = None
 
+    if arguments['function'] == None or arguments['callback'] == None:
+        return wsgi_error( environ, start_response, "No function or callback provided." )
+    functionname = arguments['function']
+    
     try: 
         if functionname == "start_game":
             response = public_interface.start_game( arguments['width'], 
@@ -55,7 +68,8 @@ def simple_app(environ, start_response):
                                                       arguments['point'], 
                                                       argumenst['last_move'] )
         else:
-            response = False
+            return wsgi_error( environ, start_response, functionname + " isn't an available functon" )
+
     except Exception as e:
         response = str(e)
     
@@ -67,7 +81,7 @@ def simple_app(environ, start_response):
     response_headers = [('Content-type','application/json')]
     start_response(status, response_headers)
     print response
-    return [json.dumps( response, indent=4 )]
+    return [ arguments['callback'] + "(" + json.dumps( response, indent=4 )+")" ]
 
 httpd = make_server('', 8000, simple_app)
 print "Serving HTTP on port 8000..."

@@ -2,12 +2,24 @@ from flup import Game
 from moves import obfuscate_move 
 
 def start_game( width=10, height=10, gametype="Default", ntokens=8, nturns=10): 
+    if width == None:
+        width = 10
+    if height == None:
+        height = 10
+    if gametype == None:
+        gametype = "Default"
+    if ntokens == None:
+        ntokens = 8
+    if nturns == None:
+        nturns = 10
     g = Game()
     g.generate( width, height, gametype, ntokens, nturns)
     g.save()
     return str(g.mongo_id) 
 
 def load_game( mongo_id ):
+    if mongo_id == None:
+        raise Exception( "mongo_id is required" )
     g = Game()
     g.mongo_id = mongo_id
     g.load()
@@ -27,6 +39,8 @@ def get_complete_state( mongo_id ):
     return return_object 
 
 def get_update( mongo_id, last_move ):
+    if last_move == None:
+        last_move = -1
     g = load_game( mongo_id )
     return __update( g, last_move )
 
@@ -46,6 +60,12 @@ def __gamestate( game ):
     return game.gamestate
 
 def attempt_move( mongo_id, obfuscated_token, point, last_move ):
+    if obfuscated_token == None:
+        raise Exception( "obfuscated_token is required" )
+    if point == None:
+        raise Exception( "point is required" )
+    if last_move == None:
+        last_move = -1
     g = load_game( mongo_id )
     token = g.deobfuscateToken( obfuscated_token )
     if g.currentToken.name() != token.name():
