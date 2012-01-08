@@ -34,10 +34,9 @@ $(document).ready(function() {
             width: $( "#width_amount" ).val(),
             height: $( "#height_amount" ).val(),
             ntokens: $( "#ntokens_amount").val(),
-            success_callback: function(mongo_id){ window.location = "game.html?id=" + mongo_id; }
+            success_callback: function(mongo_id){ window.location = "game.html#" + mongo_id; }
         });
     } 
     );
-
 });
 
