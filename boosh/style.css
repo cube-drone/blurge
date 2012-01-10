@@ -1,4 +1,3 @@
-
 #create
 {
     width: 300px;
@@ -10,12 +9,77 @@
     border-radius: 5px;
 }
 
-
 .slider_amt
 {
     border: none;
     font-size: large;
     font-weight: bold;
+}
 
 
+.grid_container
+{
+    background-color: black;
+}
+
+.cube_grid table
+{
+    background-color: white;
+    border: 1px solid gray;
+    cursor: move;
+}
+
+.gridsquare 
+{
+    
+}
+
+.gridsquare.even
+{
+    background-color: blue;
+}
+
+.drop_target
+{
+    opacity: 0.5;
+}
+
+.drop_target_hover
+{
+    opacity: 0.2;
+}
+
+.token
+{
+    border: 2px solid black;
+    height: 98%;
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    border-radius: 100px;
+    text-align: center;
+}
+
+.A
+{
+    background-color: green;
+}
+
+.B
+{
+    background-color: blue;
+}
+
+.C
+{
+    background-color: pink;
+}
+
+.D
+{
+    background-color: salmon;
+}
+
+.E
+{
+    background-color: orange;
 }

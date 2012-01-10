@@ -5,37 +5,75 @@
         // options.x is the number of horizontal squares in the cube grid. 
         // options.y is the number of vertical squares in the cube grid. 
         // options.size is the size of cubes in the grid. 
+        // options.drop_token is the function to be called if a user drops a
+        //  token on one of the grid items.  
+        this.data( 'maxwidth', options.x - 1 )
+        this.data( 'maxheight', options.y - 1)
         var x = options.x;
         var y = options.y;
         var size = options.size; 
-
-        var cube_grid = "";
+        var drop_token = options.drop_token;
 
         var total_height = y * size;
         var total_width = x * size; 
 
-        cube_grid += "<div style='position: absolute; top:0; width:"+total_width+"px; height:"+total_height+"px;' >";
-        cube_grid += "<table>";
+        var outer_div = $("<div style='position: absolute; top:0; width:"+total_width+"px; height:"+total_height+"px;' ></div>");
+        var table = $("<table style='table-layout:fixed;'></table>");
 
-        var counter = 0;
         for( var i = 0; i < x; i++ ) 
         {
-            cube_grid += "<tr>";
+            var table_row = $("<tr></tr>");
             for( var j = 0; j < y; j++)
             {
-                var background_color = counter % 2 == 0 ? 'blue' : 'pink';
-                cube_grid += "<td class='x_"+j+" y_"+(y-i-1)+"' style='height:"+size+"px; width:"+size+"px; background-color:"+background_color+";' ></td>";
-                counter ++;
+                var odd = (i + j) % 2 == 0 ? 'even' : 'odd';
+                var grid_square = $("<td class='x_"+j+" y_"+(y-i-1)+" gridsquare "+odd+"' style='height:"+size+"px; width:"+size+"px;'></td>")
+                grid_square.data("x",j).data("y", (y-i-1)) ;
+                var drop_fn = function( grid_square )
+                {
+                    var target = grid_square;
+                    return function( event, ui )
+                    {
+                        token = ui.draggable;
+                        var name =  token.data('token_name')  ;
+                        var x = target.data('x') ;
+                        var y = target.data('y') ;
+                        drop_token( name, x, y );
+                        token.remove();
+                    }
+                }
+                grid_square.droppable( {
+                        accept:".token",
+                        activeClass: "drop_target", 
+                        hoverClass: "drop_target_hover",
+                        drop: drop_fn( grid_square )
+                });  
+                table_row.append( grid_square );
             }
-            cube_grid += "</tr>";
-            counter ++;
+            table.append(table_row);
         }
-        cube_grid += "</table>";
+        outer_div.append(table);
         
         this.css('position', 'relative');
-        this.append( cube_grid );
+        this.append( outer_div );
+        console.log( this );
     },
-    get : function(x, y) {
+    get: function(x, y) {
+        var selector = ".x_"+x+".y_"+y;
+        return $(selector);
+    },
+    place: function(x, y, token){
+        console.log( "Placing " + token + " at " + x + ", " + y );
+        this.grid("get", x, y).append( token );
+    }, 
+    clear: function(x, y){
+        console.log( "Removing from " + x + ", " + y );
+        this.grid("get", x, y).html("");
+    }, 
+    maxheight: function(){
+        return this.data("maxheight");
+    },
+    maxwidth: function(){
+        return this.data("maxwidth");
     }
   };
 
