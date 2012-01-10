@@ -12,7 +12,7 @@ master_arguments = {
     'nturns': lambda x: int(x),
     'ntokens': lambda x: int(x),
     'token': lambda x: str(x),
-    'point': lambda x: (int(x.split(',')[0]), int(x.split(',')[1]) ),
+    'point': lambda x: (int(x.split('-')[0]), int(x.split('-')[1]) ),
     'function': lambda x: str(x)
 }
 
@@ -66,7 +66,7 @@ def simple_app(environ, start_response):
             response = public_interface.attempt_move( arguments['mongo_id'], 
                                                       arguments['token'], 
                                                       arguments['point'], 
-                                                      argumenst['last_move'] )
+                                                      arguments['last_move'] )
         else:
             return wsgi_error( environ, start_response, functionname + " isn't an available functon" )
 

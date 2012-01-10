@@ -64,6 +64,7 @@ class Game( object ):
         self.laziness = mongo_object[u'laziness']
         self.gametype = mongo_object[u'gametype']
         self.gamestate = mongo_object[u'gamestate']
+        self.mongo_id = mongo_object[u'_id'] 
         
         self.grid.unserialize( mongo_object[u'grid'] )
         pass
@@ -74,6 +75,7 @@ class Game( object ):
                     "height": self.height, 
                     "laziness": self.laziness, 
                     "gamestate": self.gamestate,
+                    "balls": "hello",
                     "gametype": self.gametype,
                     "tokens" : [ token.serialize() for token in self.tokens ],  
                     "currentToken": self.currentToken.serialize(),
@@ -81,7 +83,9 @@ class Game( object ):
         if self.mongo_id == 0:
             self.mongo_id = self.games_database().insert( document )
         else:
-            self.games_database().update({'_id':self.mongo_id},{'$set':document}) 
+            print "saving!"
+            print self.games_database().update({u'_id':self.mongo_id}, document,
+                safe=True ) 
 
     def games_database( self ):
         connection = Connection()  

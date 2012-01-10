@@ -66,14 +66,18 @@ def attempt_move( mongo_id, obfuscated_token, point, last_move ):
         raise Exception( "point is required" )
     if last_move == None:
         last_move = -1
+
     g = load_game( mongo_id )
     token = g.deobfuscateToken( obfuscated_token )
+    print token.name()
+
     if g.currentToken.name() != token.name():
         return False
     if g.attemptMove( token, point ):
         g.save()
         return { u'update': __update( g, last_move ), 
-                u'playable': __gamestate( g ) } 
+                 u'playable': __gamestate( g ), 
+                 u'currentToken': g.obfuscateToken( g.currentToken ) } 
     else:
         return False
 

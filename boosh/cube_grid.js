@@ -55,18 +55,15 @@
         
         this.css('position', 'relative');
         this.append( outer_div );
-        console.log( this );
     },
     get: function(x, y) {
         var selector = ".x_"+x+".y_"+y;
         return $(selector);
     },
     place: function(x, y, token){
-        console.log( "Placing " + token + " at " + x + ", " + y );
         this.grid("get", x, y).append( token );
     }, 
     clear: function(x, y){
-        console.log( "Removing from " + x + ", " + y );
         this.grid("get", x, y).html("");
     }, 
     maxheight: function(){

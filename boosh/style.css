@@ -44,9 +44,19 @@
     opacity: 0.5;
 }
 
+.drop_target.odd
+{
+    background-color: pink;
+}
+
 .drop_target_hover
 {
     opacity: 0.2;
+}
+
+.null
+{
+    visibility: hidden;
 }
 
 .token
