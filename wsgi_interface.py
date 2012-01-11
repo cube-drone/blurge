@@ -67,6 +67,9 @@ def simple_app(environ, start_response):
                                                       arguments['token'], 
                                                       arguments['point'], 
                                                       arguments['last_move'] )
+        elif functionname == "hint":
+            response = public_interface.hint( arguments['mongo_id'],
+                                                arguments['last_move'] ) 
         else:
             return wsgi_error( environ, start_response, functionname + " isn't an available functon" )
 

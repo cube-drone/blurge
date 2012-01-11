@@ -181,8 +181,12 @@ class Game( object ):
                 return self.tokens[i]
     
     def attemptMove( self, token, point ):
-        self.selectValidToken()
-        return self.grid.placeToken( token, point )
+        success = self.grid.placeToken( token, point )
+        if success:
+            self.selectValidToken()
+            return True
+        else:
+            return False
     
     def __repr__(self):
         ret = ""

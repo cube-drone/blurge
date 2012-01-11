@@ -2,7 +2,7 @@
 
 var flup = {
     server_address:"http://192.168.182.131:8000/",
-    timeout:3000,  
+    timeout:30000,  
  
     do_function:function( function_name, args )
     {
@@ -36,20 +36,26 @@ var flup = {
     start_game:function( args )
     /* Args: 'width', 'height', 'ntokens', 'gametype', 'nturns' */
     {
-        flup.do_function( 'start_game', args )
+        flup.do_function( 'start_game', args );
     },
    
     get_complete_state:function( args )
     /* Args: 'mongo_id'*/
     { 
-        flup.do_function( 'get_complete_state', args )
+        flup.do_function( 'get_complete_state', args );
     },
     
     attempt_move:function( args )
     /* Args: 'mongo_id', 'token', 'point', 'last_move' */ 
     {
-        flup.do_function( 'attempt_move', args )
+        flup.do_function( 'attempt_move', args );
     },  
+    
+    hint: function( args)
+    /* Args: 'mongo_id', 'last_move' */
+    {
+        flup.do_function( 'hint', args );
+    },
 }
 
 

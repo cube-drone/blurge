@@ -33,8 +33,17 @@ var game = {
         });
         console.log( "Drop:", token, x, y )
     },
+    hint: function( )
+    {
+        flup.hint( { 
+            mongo_id: game.mongo_id,
+            last_move: game.last_move,
+            success_callback: game.attempt_move
+        });
+    },
     attempt_move: function( result )
     {
+        console.log( result );
         if( result === false ) 
         {
             console.log( "Move failed." );
