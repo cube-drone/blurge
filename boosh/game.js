@@ -8,11 +8,13 @@ var game = {
     next_token_element: ".next_token",
     failure_counter: 0,
     failure_counter_element: ".failure_counter",
+    hint_element: ".hint",
     setup: function( gamestate )
     {
         game.gamestate = gamestate;
         $(game.grid_element).grid( { x:gamestate.width, y:gamestate.height,size: 50, drop_token:game.drop_token } ); 
         $(game.container_element).boxy( ); 
+        $(game.hint_element).click(game.hint);
         game.update( gamestate );
         
         console.log( game); 

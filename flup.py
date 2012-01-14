@@ -22,6 +22,7 @@ class Game( object ):
     def __init__(self):
         self.laziness = 30 #If we've already found 30 solutions, stop looking. 
         self.minimumTimeBetweenBombs = 12
+        self.minimumTimeBetweenJokers = 10
     
     def generate( self, width=10, height=10, gametype="Default", ntokens=8,
                     nturns=10):
@@ -45,6 +46,7 @@ class Game( object ):
         self.currentToken = tokens.InvisibleToken() 
         self.failureCounter = 10
         self.lastBomb = 0 #Too many bombs make the game unplayable. 
+        self.lastJoker = 0 #Too many jokers make the game confusing. 
             
         # Initialize Board
         if self.gametype == "Clear":
@@ -71,6 +73,7 @@ class Game( object ):
         self.mongo_id = mongo_object[u'_id'] 
         self.failureCounter = mongo_object[u'failureCounter']
         self.lastBomb = mongo_object[u'lastBomb']
+        self.lastJoker = mongo_object[u'lastJoker']
         
         self.grid.unserialize( mongo_object[u'grid'] )
         print "Load complete." 
@@ -87,7 +90,8 @@ class Game( object ):
                     "currentToken": self.currentToken.serialize(),
                     "grid": self.grid.serialize(),
                     "failureCounter":self.failureCounter, 
-                    "lastBomb":self.lastBomb}  
+                    "lastBomb":self.lastBomb,  
+                    "lastJoker":self.lastJoker}  
         if self.mongo_id == 0:
             self.mongo_id = self.games_database().insert( document )
         else:
@@ -179,6 +183,10 @@ class Game( object ):
         if token.name() == tokens.Bomb().name() :
             if self.lastBomb < self.minimumTimeBetweenBombs:
                 return []  
+        if token.name() == tokens.Joker().name() :
+            if self.lastJoker < self.minimumTimeBetweenJokers:
+                return []  
+
         valid_placements = [] 
         for point in self.grid.points():
             if token.isValid( self.grid, point) and not self.grid.isAnyTokenAtPoint( point ):
@@ -206,12 +214,30 @@ class Game( object ):
                 self.lastBomb = 0
             else:
                 self.lastBomb += 1
+            if token.name() == tokens.Joker().name() :
+                self.lastJoker = 0
+            else:
+                self.lastJoker += 1
             self.selectValidToken()
             self.success()
             return True
         else:
             self.failure()
             return False
+    
+    def hint( self ):
+        token_point = self.solveOneStep([self.currentToken])
+        if token_point:
+            token, point = token_point
+        else:
+            self.gamestate = "Win"
+            return False
+
+        if self.grid.placeToken( token, point ):
+            self.failure()
+            return True 
+        else:
+            return self.hint()
     
     def __repr__(self):
         ret = ""

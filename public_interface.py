@@ -96,18 +96,13 @@ def hint( mongo_id, last_move ):
     if last_move == None:
         last_move = -1
     g = load_game( mongo_id )
-    token_point = g.solveOneStep([g.currentToken])
-    if token_point:
-        token, point = token_point
-    else:
-        g.gamestate = "Unplayable"
-        g.save()
-        return False;  
-    if g.attemptMove( token, point ):
-        g.save()
-        return { u'update': __update( g, last_move ), 
-                 u'playable': __gamestate( g ), 
-                 u'currentToken': g.obfuscateToken( g.currentToken ) } 
+    g.hint()
+    g.save()
+    return { u'success': True, 
+             u'update': __update( g, last_move ), 
+             u'failureCounter': g.failureCounter,
+             u'playable': g.gamestate, 
+             u'currentToken': g.obfuscateToken( g.currentToken ) } 
 
 if __name__ == '__main__':
     mongo_id = start_game()
