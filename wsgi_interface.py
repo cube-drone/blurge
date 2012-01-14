@@ -74,7 +74,8 @@ def simple_app(environ, start_response):
             return wsgi_error( environ, start_response, functionname + " isn't an available functon" )
 
     except Exception as e:
-        response = str(e)
+        print "OH NO! EXCEPTION!", e.__repr__()
+        response = e.__repr__()
     
     #JSON encode the response.
     print functionname, ":" 

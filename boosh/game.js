@@ -6,21 +6,42 @@ var game = {
     grid_element: ".cube_grid", 
     container_element: ".grid_container",
     next_token_element: ".next_token",
+    failure_counter: 0,
+    failure_counter_element: ".failure_counter",
     setup: function( gamestate )
     {
         game.gamestate = gamestate;
         $(game.grid_element).grid( { x:gamestate.width, y:gamestate.height,size: 50, drop_token:game.drop_token } ); 
         $(game.container_element).boxy( ); 
-        for( var i = 0; i < gamestate.moves.length; i++ ) 
-        {
-            game.make_move( gamestate.moves[i] )
-        }
-        if( gamestate.gamestate != "Playable" )
-        {
-            alert( "You Win!" );
-        }
-        game.next_token();
+        game.update( gamestate );
+        
         console.log( game); 
+    },
+    update: function( result )
+    {
+        console.log( result );
+        game.is_still_playable( result );
+        if( result.success === false ) 
+        {
+            console.log( "Move failed." );
+            // Update failure count
+            game.set_failure_counter( result.failureCounter );
+            // Reset token 
+            game.next_token();
+        } 
+        else
+        {
+            console.log( "Move successful." );
+            console.log( result );
+            // Update board
+            game.make_moves( result.update ); 
+            // Update failure count
+            game.set_failure_counter( result.failureCounter );
+            // Set next token
+            game.gamestate.currentToken = result.currentToken; 
+            // Show next token 
+            game.next_token();
+        }
     },
     drop_token: function( token, x, y )
     {
@@ -29,7 +50,7 @@ var game = {
             token: token,
             point: x + "-" + y,
             last_move: game.last_move,
-            success_callback: game.attempt_move
+            success_callback: game.update
         });
         console.log( "Drop:", token, x, y )
     },
@@ -38,31 +59,27 @@ var game = {
         flup.hint( { 
             mongo_id: game.mongo_id,
             last_move: game.last_move,
-            success_callback: game.attempt_move
+            success_callback: game.update
         });
     },
-    attempt_move: function( result )
+    is_still_playable: function( result )
     {
-        console.log( result );
-        if( result === false ) 
+        // Check if you win or lose
+        if( result.playable != "Playable" )
         {
-            console.log( "Move failed." );
-            game.next_token();
-        } 
+            alert( "You " + result.playable );
+            return false;
+        }
         else
         {
-            console.log( "Move successful." );
-            console.log( result );
-            for( var i = 0; i < result.update.length; i++ ) 
-            {
-                game.make_move( result.update[i] )
-            }
-            if( result.playable != "Playable" )
-            {
-                alert( "You Win!" );
-            }
-            game.gamestate.currentToken = result.currentToken; 
-            game.next_token();
+            return true;
+        }
+    },
+    make_moves: function( moves )
+    {
+        for( var i = 0; i < moves.length; i++ ) 
+        {
+            game.make_move( moves[i] )
         }
     },
     make_move: function( move )
@@ -87,6 +104,13 @@ var game = {
         token_element.html( token_lib.create_token( game.gamestate.currentToken ).draggable({
             revert:'invalid' 
         } )); 
+    },
+    set_failure_counter: function( new_counter ) 
+    {
+        new_counter = parseInt( new_counter, 10 );
+        var diff = new_counter - game.failure_counter;
+        game.failure_counter = new_counter;
+        $(game.failure_counter_element).val( new_counter );
     }
 
 }

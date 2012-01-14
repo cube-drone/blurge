@@ -2,6 +2,7 @@ from flup import Game
 from moves import obfuscate_move 
 
 def start_game( width=10, height=10, gametype="Default", ntokens=8, nturns=10): 
+    print "=== Start Game === " 
     if width == None:
         width = 10
     if height == None:
@@ -26,19 +27,24 @@ def load_game( mongo_id ):
     return g
 
 def get_complete_state( mongo_id ): 
+    print "=== Get Complete State ==="
     g = load_game( mongo_id ) 
     return_object = { 
         u'width': g.width,
         u'height': g.height, 
-        u'moves': [ obfuscate_move( move, g) for move in g.grid.moves ],
-        u'currentToken': g.obfuscateToken( g.currentToken ),
-        u'tokens': [ g.obfuscateToken( token) for token in g.tokens ], 
+        #u'tokens': [ g.obfuscateToken( token) for token in g.tokens ], 
         #u'tokens': [ token.name() for token in g.tokens ],
-        u'gamestate': g.gamestate
+       
+        u'success': True, 
+        u'update': [ obfuscate_move( move, g) for move in g.grid.moves ],
+        u'failureCounter': g.failureCounter, 
+        u'playable': g.gamestate,
+        u'currentToken': g.obfuscateToken( g.currentToken ),
     } 
     return return_object 
 
 def get_update( mongo_id, last_move ):
+    print "=== Get Update ==="
     if last_move == None:
         last_move = -1
     g = load_game( mongo_id )
@@ -53,13 +59,12 @@ def __update( game, last_move ):
     return moves
 
 def get_gamestate( mongo_id ):
+    print "=== Get Gamestate ===" 
     g = load_game( mongo_id )
-    return __gamestate( g )
-
-def __gamestate( game ):
-    return game.gamestate
+    return g.gamestate
 
 def attempt_move( mongo_id, obfuscated_token, point, last_move ):
+    print "=== Attempt Move ===" 
     if obfuscated_token == None:
         raise Exception( "obfuscated_token is required" )
     if point == None:
@@ -75,13 +80,19 @@ def attempt_move( mongo_id, obfuscated_token, point, last_move ):
         return False
     if g.attemptMove( token, point ):
         g.save()
-        return { u'update': __update( g, last_move ), 
-                 u'playable': __gamestate( g ), 
+        return { u'success': True, 
+                 u'update': __update( g, last_move ), 
+                 u'failureCounter': g.failureCounter ,
+                 u'playable': g.gamestate, 
                  u'currentToken': g.obfuscateToken( g.currentToken ) } 
     else:
-        return False
+        g.save()
+        return { u'success': False,
+                 u'playable': g.gamestate,
+                 u'failureCounter': g.failureCounter }
 
 def hint( mongo_id, last_move ):
+    print "=== Hint ===" 
     if last_move == None:
         last_move = -1
     g = load_game( mongo_id )
@@ -103,6 +114,8 @@ if __name__ == '__main__':
     state = get_complete_state(mongo_id)
     update = get_update( mongo_id, -1 )
     gamestate = get_gamestate( mongo_id )
+    print "Gamestate: ", state 
+    print gamestate
     
     lastmove = update[ len( update ) -1 ] 
     counter, blah, blor, blop = lastmove

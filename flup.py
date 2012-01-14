@@ -35,12 +35,13 @@ class Game( object ):
         self.tokens = tokens.selectRandomNTokens( ntokens )  
         self.nturns = nturns
         self.laziness = 30 #If we've already found 30 solutions, stop looking. 
-        self.gamestate = "Playable" # "Playable" || "Unplayable" 
+        self.gamestate = "Playable" # "Playable" || "Win" || "Lose"  
         self.mongo_id = 0 #The mongo_db id of this game record. 
         self.gametype = gametype
         # This isn't valid, but should be overwritten by the 
         # self.selectValidToken() call. 
         self.currentToken = tokens.InvisibleToken() 
+        self.failureCounter = 10
             
         # Initialize Board
         if self.gametype == "Clear":
@@ -66,6 +67,7 @@ class Game( object ):
         self.gametype = mongo_object[u'gametype']
         self.gamestate = mongo_object[u'gamestate']
         self.mongo_id = mongo_object[u'_id'] 
+        self.failureCounter = mongo_object[u'failureCounter']
         
         self.grid.unserialize( mongo_object[u'grid'] )
         print "Load complete." 
@@ -81,13 +83,22 @@ class Game( object ):
                     "gametype": self.gametype,
                     "tokens" : [ token.serialize() for token in self.tokens ],  
                     "currentToken": self.currentToken.serialize(),
-                    "grid": self.grid.serialize() }  
+                    "grid": self.grid.serialize(),
+                    "failureCounter":self.failureCounter  }  
         if self.mongo_id == 0:
             self.mongo_id = self.games_database().insert( document )
         else:
-            print self.games_database().update({u'_id':self.mongo_id}, document,
+            print "\t",self.games_database().update({u'_id':self.mongo_id}, document,
                 safe=True ) 
         print "Save complete." 
+
+    def success( self ):
+        self.failureCounter += 1
+    
+    def failure( self ):
+        self.failureCounter -= 1 
+        if self.failureCounter <= 0:
+            self.gamestate = "Lose"
 
     def games_database( self ):
         connection = Connection()  
@@ -115,7 +126,7 @@ class Game( object ):
         result = self.solveOneStep()
         if not result: 
             print "Gamestate: Unplayable"
-            self.gamestate = "Unplayable" 
+            self.gamestate = "Win" 
             return 
         token, point = result
         print "Next Token: ", token
@@ -186,8 +197,10 @@ class Game( object ):
         success = self.grid.placeToken( token, point )
         if success:
             self.selectValidToken()
+            self.success()
             return True
         else:
+            self.failure()
             return False
     
     def __repr__(self):
