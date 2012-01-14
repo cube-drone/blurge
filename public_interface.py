@@ -69,7 +69,7 @@ def attempt_move( mongo_id, obfuscated_token, point, last_move ):
 
     g = load_game( mongo_id )
     token = g.deobfuscateToken( obfuscated_token )
-    print token.name()
+    print "Attempting To Play  ", token.name(), " at ", point
 
     if g.currentToken.name() != token.name():
         return False

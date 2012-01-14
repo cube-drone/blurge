@@ -77,13 +77,16 @@ def simple_app(environ, start_response):
         response = str(e)
     
     #JSON encode the response.
-    print functionname
+    print functionname, ":" 
     print arguments
+    print "------------------------"
  
     status = '200 OK'
     response_headers = [('Content-type','application/json')]
     start_response(status, response_headers)
     print response
+    print 
+    print
     return [ arguments['callback'] + "(" + json.dumps( response, indent=4 )+")" ]
 
 httpd = make_server('', 8000, simple_app)

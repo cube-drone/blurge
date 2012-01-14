@@ -114,6 +114,8 @@ class Game( object ):
             self.gameState = "Unplayable" 
             return 
         token, point = result
+        print "Next Token:", token
+        print "Next Point:", point
         self.currentToken = token
     
     def completelySolve( self ):
