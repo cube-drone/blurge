@@ -64,6 +64,11 @@ var game = {
     },
     is_still_playable: function( result )
     {
+        if( result.playable === undefined )
+        {
+            alert( "An error has occurred! : \n" + result ); 
+            return;
+        }
         // Check if you win or lose
         if( result.playable != "Playable" )
         {

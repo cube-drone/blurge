@@ -257,7 +257,7 @@ class Joker( Token ):
         return u"Joker" 
     def isValid( self, grid, point ):
         """ No pattern here. Randomness. """
-        return random.choice( [ True, False ] ) 
+        return random.choice( [ True, True, False ] ) 
 
 def __joker_test():
     g = TokenGrid( 100, 10 )

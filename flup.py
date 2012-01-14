@@ -19,6 +19,9 @@ class Game( object ):
         The game object must be generate()d or load()ed before any further
         operations are performed on it. 
     """
+    def __init__(self):
+        self.laziness = 30 #If we've already found 30 solutions, stop looking. 
+        self.minimumTimeBetweenBombs = 12
     
     def generate( self, width=10, height=10, gametype="Default", ntokens=8,
                     nturns=10):
@@ -34,7 +37,6 @@ class Game( object ):
         self.grid = Grid( width, height )
         self.tokens = tokens.selectRandomNTokens( ntokens )  
         self.nturns = nturns
-        self.laziness = 30 #If we've already found 30 solutions, stop looking. 
         self.gamestate = "Playable" # "Playable" || "Win" || "Lose"  
         self.mongo_id = 0 #The mongo_db id of this game record. 
         self.gametype = gametype
@@ -42,6 +44,7 @@ class Game( object ):
         # self.selectValidToken() call. 
         self.currentToken = tokens.InvisibleToken() 
         self.failureCounter = 10
+        self.lastBomb = 0 #Too many bombs make the game unplayable. 
             
         # Initialize Board
         if self.gametype == "Clear":
@@ -63,11 +66,11 @@ class Game( object ):
         self.tokens = [ tokens.deserialize( token ) for token in
                                 mongo_object[u'tokens'] ] 
         self.currentToken = tokens.deserialize( mongo_object[u'currentToken'] )
-        self.laziness = mongo_object[u'laziness']
         self.gametype = mongo_object[u'gametype']
         self.gamestate = mongo_object[u'gamestate']
         self.mongo_id = mongo_object[u'_id'] 
         self.failureCounter = mongo_object[u'failureCounter']
+        self.lastBomb = mongo_object[u'lastBomb']
         
         self.grid.unserialize( mongo_object[u'grid'] )
         print "Load complete." 
@@ -77,14 +80,14 @@ class Game( object ):
         print "Saving..." 
         document = {"width": self.width, 
                     "height": self.height, 
-                    "laziness": self.laziness, 
                     "gamestate": self.gamestate,
                     "balls": "hello",
                     "gametype": self.gametype,
                     "tokens" : [ token.serialize() for token in self.tokens ],  
                     "currentToken": self.currentToken.serialize(),
                     "grid": self.grid.serialize(),
-                    "failureCounter":self.failureCounter  }  
+                    "failureCounter":self.failureCounter, 
+                    "lastBomb":self.lastBomb}  
         if self.mongo_id == 0:
             self.mongo_id = self.games_database().insert( document )
         else:
@@ -125,7 +128,7 @@ class Game( object ):
         print "Planning Next Token..... " 
         result = self.solveOneStep()
         if not result: 
-            print "Gamestate: Unplayable"
+            print "Gamestate: Win"
             self.gamestate = "Win" 
             return 
         token, point = result
@@ -173,6 +176,9 @@ class Game( object ):
     
     def solveForToken( self, token ):
         """ Returns all valid placements for the token. """ 
+        if token.name() == tokens.Bomb().name() :
+            if self.lastBomb < self.minimumTimeBetweenBombs:
+                return []  
         valid_placements = [] 
         for point in self.grid.points():
             if token.isValid( self.grid, point) and not self.grid.isAnyTokenAtPoint( point ):
@@ -196,6 +202,10 @@ class Game( object ):
     def attemptMove( self, token, point ):
         success = self.grid.placeToken( token, point )
         if success:
+            if token.name() == tokens.Bomb().name() :
+                self.lastBomb = 0
+            else:
+                self.lastBomb += 1
             self.selectValidToken()
             self.success()
             return True
