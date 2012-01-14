@@ -53,6 +53,7 @@ class Game( object ):
         self.selectValidToken()
     
     def load( self ):
+        print "Loading..."
         mongo_object = self.games_database().find_one({u'_id':
                                         ObjectId(self.mongo_id)} ) 
         self.width = int(mongo_object[u'width'])
@@ -67,10 +68,11 @@ class Game( object ):
         self.mongo_id = mongo_object[u'_id'] 
         
         self.grid.unserialize( mongo_object[u'grid'] )
-        pass
+        print "Load complete." 
     
     def save( self):
         """ Save the entirety of the game state to mongodb. """
+        print "Saving..." 
         document = {"width": self.width, 
                     "height": self.height, 
                     "laziness": self.laziness, 
@@ -83,9 +85,9 @@ class Game( object ):
         if self.mongo_id == 0:
             self.mongo_id = self.games_database().insert( document )
         else:
-            print "saving!"
             print self.games_database().update({u'_id':self.mongo_id}, document,
                 safe=True ) 
+        print "Save complete." 
 
     def games_database( self ):
         connection = Connection()  
@@ -109,13 +111,15 @@ class Game( object ):
     
     def selectValidToken( self ):
         """ Set a verifiably playable token to the current token. """
+        print "Planning Next Token..... " 
         result = self.solveOneStep()
         if not result: 
-            self.gameState = "Unplayable" 
+            print "Gamestate: Unplayable"
+            self.gamestate = "Unplayable" 
             return 
         token, point = result
-        print "Next Token:", token
-        print "Next Point:", point
+        print "Next Token: ", token
+        print "Next Point: ", point
         self.currentToken = token
     
     def completelySolve( self ):
@@ -142,14 +146,14 @@ class Game( object ):
             as a tuple (token, point).  """ 
         if temp_tokens == []:
             temp_tokens = copy.deepcopy( self.tokens ) 
-        #print "Solving one step with tokens ", temp_tokens 
+        print "\tSolving one step with tokens ", temp_tokens 
         test_token = random.choice( temp_tokens )
-        #print "Attempting", test_token.name()
+        print "\tAttempting", test_token.name()
         
         valid_placements = self.solveForToken( test_token ) 
-        #print "Valid Placements: ", valid_placements
+        print "\tValid Placements: ", valid_placements
         if len(valid_placements) == 0 and len(temp_tokens) <= 1:
-            #print "No valid placements for ", test_token.name()
+            print "\tNo valid placements for ", test_token.name()
             return False
         if len(valid_placements) == 0:
             temp_tokens.remove( test_token )
@@ -165,10 +169,6 @@ class Game( object ):
             if len( valid_placements ) > self.laziness:
                 break
         return valid_placements
-
-        place_point = random.choice(valid_placements)
-        # print test_token.name(), place_point
-        return ( test_token, place_point ) 
     
     def obfuscateToken( self, token ):
         """ Obfuscate the token using the current set of obfuscation rules. """
