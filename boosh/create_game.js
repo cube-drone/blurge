@@ -2,18 +2,18 @@
 
 $(document).ready(function() {
     $( "#width" ).slider({
-            value:10,
+            value:7,
             min: 5,
-            max: 50,
+            max: 12,
             slide: function( event, ui ) { 
                 $( "#width_amount" ).val( ui.value );
                 }
             });
 
     $( "#height" ).slider({
-            value:10,
+            value:7,
             min: 5,
-            max: 50,
+            max: 12,
             slide: function( event, ui ) { 
                 $( "#height_amount" ).val( ui.value );
                 }
