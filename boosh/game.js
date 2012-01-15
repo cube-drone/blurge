@@ -15,6 +15,7 @@ var game = {
         $(game.grid_element).grid( { x:gamestate.width, y:gamestate.height,size: 50, drop_token:game.drop_token } ); 
         $(game.container_element).boxy( ); 
         $(game.hint_element).click(game.hint);
+        console.log( gamestate.tokens );
         game.update( gamestate );
         
         console.log( game); 

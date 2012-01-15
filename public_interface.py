@@ -33,7 +33,7 @@ def get_complete_state( mongo_id ):
         u'width': g.width,
         u'height': g.height, 
         #u'tokens': [ g.obfuscateToken( token) for token in g.tokens ], 
-        #u'tokens': [ token.name() for token in g.tokens ],
+        u'tokens': [ token.name() for token in g.tokens ],
        
         u'success': True, 
         u'update': [ obfuscate_move( move, g) for move in g.grid.moves ],

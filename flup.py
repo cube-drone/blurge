@@ -41,7 +41,7 @@ class Game( object ):
         self.gamestate = "Playable" # "Playable" || "Win" || "Lose"  
         self.mongo_id = 0 #The mongo_db id of this game record. 
         self.gametype = gametype
-        # This isn't valid, but should be overwritten by the 
+        # an invisible currentToken isn't valid, but should be overwritten by the 
         # self.selectValidToken() call. 
         self.currentToken = tokens.InvisibleToken() 
         self.failureCounter = 10
