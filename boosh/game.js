@@ -49,7 +49,6 @@ var game = {
     {
         flup.attempt_move( { 
             mongo_id: game.mongo_id,
-            token: token,
             point: x + "-" + y,
             last_move: game.last_move,
             success_callback: game.update

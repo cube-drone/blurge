@@ -207,18 +207,10 @@ class Game( object ):
             if fustulated_token == obfuscator[i]:
                 return self.tokens[i]
     
-    def attemptMove( self, token, point ):
-        success = self.grid.placeToken( token, point )
+    def attemptMove( self, point ):
+        success = self.grid.placeToken( self.currentToken, point )
         if success:
-            if token.name() == tokens.Bomb().name() :
-                self.lastBomb = 0
-            else:
-                self.lastBomb += 1
-            if token.name() == tokens.Joker().name() :
-                self.lastJoker = 0
-            else:
-                self.lastJoker += 1
-            self.selectValidToken()
+            self.setupNextTurn()
             self.success()
             return True
         else:
@@ -235,9 +227,22 @@ class Game( object ):
 
         if self.grid.placeToken( token, point ):
             self.failure()
+            self.setupNextTurn()
             return True 
         else:
             return self.hint()
+
+    def setupNextTurn(self):
+        if self.currentToken.name() == tokens.Bomb().name() :
+            self.lastBomb = 0
+        else:
+            self.lastBomb += 1
+        if self.currentToken.name() == tokens.Joker().name() :
+            self.lastJoker = 0
+        else:
+            self.lastJoker += 1
+        self.selectValidToken()
+        return
     
     def __repr__(self):
         ret = ""

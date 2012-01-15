@@ -20,14 +20,17 @@
         var outer_div = $("<div style='position: absolute; top:0; width:"+total_width+"px; height:"+total_height+"px;' ></div>");
         var table = $("<table style='table-layout:fixed;'></table>");
 
-        for( var i = 0; i < x; i++ ) 
+        console.log("Manufacturing grid." );
+        for( var i = 0; i < y; i++ ) 
         {
             var table_row = $("<tr></tr>");
-            for( var j = 0; j < y; j++)
+            for( var j = 0; j < x; j++)
             {
                 var odd = (i + j) % 2 == 0 ? 'even' : 'odd';
                 var grid_square = $("<td class='x_"+j+" y_"+(y-i-1)+" gridsquare "+odd+"' style='height:"+size+"px; width:"+size+"px;'></td>")
                 grid_square.data("x",j).data("y", (y-i-1)) ;
+                console.log( "j: " + j, "i: "+ (i) );
+                console.log( "x: " + j, "y: "+ (y-i-1) );
                 var drop_fn = function( grid_square )
                 {
                     var target = grid_square;

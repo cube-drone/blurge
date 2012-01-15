@@ -46,7 +46,7 @@ var flup = {
     },
     
     attempt_move:function( args )
-    /* Args: 'mongo_id', 'token', 'point', 'last_move' */ 
+    /* Args: 'mongo_id', 'point', 'last_move' */ 
     {
         flup.do_function( 'attempt_move', args );
     },  

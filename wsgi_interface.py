@@ -63,8 +63,7 @@ def simple_app(environ, start_response):
         elif functionname == "get_gamestate":
             response = public_interface.get_gamestate( arguments['mongo_id'] )
         elif functionname == "attempt_move":
-            response = public_interface.attempt_move( arguments['mongo_id'], 
-                                                      arguments['token'], 
+            response = public_interface.attempt_move( arguments['mongo_id'],  
                                                       arguments['point'], 
                                                       arguments['last_move'] )
         elif functionname == "hint":

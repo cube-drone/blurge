@@ -63,22 +63,17 @@ def get_gamestate( mongo_id ):
     g = load_game( mongo_id )
     return g.gamestate
 
-def attempt_move( mongo_id, obfuscated_token, point, last_move ):
+def attempt_move( mongo_id, point, last_move ):
     print "=== Attempt Move ===" 
-    if obfuscated_token == None:
-        raise Exception( "obfuscated_token is required" )
     if point == None:
         raise Exception( "point is required" )
     if last_move == None:
         last_move = -1
 
     g = load_game( mongo_id )
-    token = g.deobfuscateToken( obfuscated_token )
-    print "Attempting To Play  ", token.name(), " at ", point
+    print "Attempting To Play  ", g.currentToken.name(), " at ", point
 
-    if g.currentToken.name() != token.name():
-        return False
-    if g.attemptMove( token, point ):
+    if g.attemptMove( point ):
         g.save()
         return { u'success': True, 
                  u'update': __update( g, last_move ), 
