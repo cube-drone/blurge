@@ -1,0 +1,4 @@
+#!/bin/bash
+git pull
+bash uwsgi_kill
+bash uwsgi_launch

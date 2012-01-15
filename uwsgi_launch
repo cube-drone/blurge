@@ -1,2 +1,3 @@
 #!/bin/bash
-nohup uwsgi --plugins http,python --protocol=http --wsgi-file wsgi_interface.py --socket :8000 &
+uwsgi --plugins http,python --protocol=http --wsgi-file wsgi_interface.py --socket :8000 --harakiri 60 --harakiri-verbose --daemonize watchmaker.log --pidfile /tmp/uwsgi.pid
+ 

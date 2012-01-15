@@ -49,7 +49,10 @@ def application(environ, start_response):
     functionname = arguments['function']
     
     try: 
-        if functionname == "start_game":
+        if functionname == "pull":
+            import commands
+            response = commands.getoutput('bash git_reload &') 
+        elif functionname == "start_game":
             response = public_interface.start_game( arguments['width'], 
                                                     arguments['height'],
                                                     arguments['gametype'],
