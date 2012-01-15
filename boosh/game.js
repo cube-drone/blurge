@@ -101,6 +101,10 @@ var game = {
             $(game.grid_element).grid( 'clear', move.x, move.y );  
             // this space becomes usable again. 
             $(game.grid_element).grid( 'get', move.x, move.y).droppable('option', 'disabled', false )
+        }
+        else if( move.namename === "doNothing" )
+        {
+            // do ... nothing. 
         } 
         game.last_move = move.sequence;
     },
