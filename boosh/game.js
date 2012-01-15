@@ -19,6 +19,17 @@ var game = {
         
         console.log( game); 
     },
+    error_fn: function( message )
+    {
+        return function(){
+            console.log( message );
+            game.message( message );
+        }
+    },
+    message: function( message )
+    {
+        alert( message );
+    },
     update: function( result )
     {
         console.log( result );
@@ -51,7 +62,8 @@ var game = {
             mongo_id: game.mongo_id,
             point: x + "-" + y,
             last_move: game.last_move,
-            success_callback: game.update
+            success_callback: game.update,
+            failure_callback: game.error_fn( "Can't find the server.") 
         });
         console.log( "Drop:", token, x, y )
     },
@@ -67,13 +79,13 @@ var game = {
     {
         if( result.playable === undefined )
         {
-            alert( "An error has occurred! : \n" + result ); 
+            game.message( "An error has occurred! : \n" + result ); 
             return;
         }
         // Check if you win or lose
         if( result.playable != "Playable" )
         {
-            alert( "You " + result.playable );
+            game.message( "You " + result.playable );
             return false;
         }
         else
@@ -134,7 +146,8 @@ $(document).ready(function() {
     
     flup.get_complete_state( { 
         mongo_id: game.mongo_id,
-        success_callback: game.setup
+        success_callback: game.setup,
+        failure_callback: game.error_fn("Couln't load page.")
     });
 });
 

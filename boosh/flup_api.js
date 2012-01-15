@@ -2,24 +2,31 @@
 
 var flup = {
     server_address:"http://192.168.182.131:8000/",
-    timeout:30000,  
+    timeout:3000,  
  
     do_function:function( function_name, args )
     {
+        console.log("Flup api: Function " + function_name );
         var function_complete = false;
         args['function'] = function_name; 
 
         var success_callback = args.success_callback;
         delete args.success_callback;
+        
         var failure_callback = 'failure_callback' in args ? args.failure_callback : function() {
             console.log( function_name + " timed out." ); 
         } 
+        delete args.failure_callback;
+
+        var callback_time = 'timeout' in args ? args.timeout : flup.timeout; 
+        delete args.timeout;
 
         var t = setTimeout( function(){
             if( function_complete === true ){ return; };
             function_complete = true;
+            console.log("Failure callback: ")
             failure_callback();
-        }, flup.timeout );
+        }, callback_time );
  
         $.ajax({
           url: flup.server_address,
