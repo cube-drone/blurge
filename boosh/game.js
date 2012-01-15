@@ -67,7 +67,7 @@ var game = {
             game.next_token();
         }
     },
-    drop_token: function( token, x, y )
+    drop_token: function( x, y )
     {
         game.loading( true );
         flup.attempt_move( { 
@@ -77,7 +77,7 @@ var game = {
             success_callback: game.update,
             failure_callback: game.error_fn( "Can't find the server.") 
         });
-        console.log( "Drop:", token, x, y )
+        console.log( "Attempt:", x, y )
     },
     hint: function( )
     {

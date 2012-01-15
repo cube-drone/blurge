@@ -29,19 +29,29 @@
                 var odd = (i + j) % 2 == 0 ? 'even' : 'odd';
                 var grid_square = $("<td class='x_"+j+" y_"+(y-i-1)+" gridsquare "+odd+"' style='height:"+size+"px; width:"+size+"px;'></td>")
                 grid_square.data("x",j).data("y", (y-i-1)) ;
+                var click_fn = function( grid_square)
+                {
+                    var target = grid_square;
+                    return function( event, ui )
+                    {
+                        var x = target.data('x') ;
+                        var y = target.data('y') ;
+                        drop_token(  x, y );
+                    }
+                }
                 var drop_fn = function( grid_square )
                 {
                     var target = grid_square;
                     return function( event, ui )
                     {
                         token = ui.draggable;
-                        var name =  token.data('token_name')  ;
                         var x = target.data('x') ;
                         var y = target.data('y') ;
-                        drop_token( name, x, y );
+                        drop_token(  x, y );
                         token.remove();
                     }
                 }
+                grid_square.dblclick( click_fn(grid_square) );
                 grid_square.droppable( {
                         accept:".token",
                         activeClass: "drop_target", 
