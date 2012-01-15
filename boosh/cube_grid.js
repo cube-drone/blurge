@@ -29,8 +29,6 @@
                 var odd = (i + j) % 2 == 0 ? 'even' : 'odd';
                 var grid_square = $("<td class='x_"+j+" y_"+(y-i-1)+" gridsquare "+odd+"' style='height:"+size+"px; width:"+size+"px;'></td>")
                 grid_square.data("x",j).data("y", (y-i-1)) ;
-                console.log( "j: " + j, "i: "+ (i) );
-                console.log( "x: " + j, "y: "+ (y-i-1) );
                 var drop_fn = function( grid_square )
                 {
                     var target = grid_square;
