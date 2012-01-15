@@ -45,7 +45,7 @@ def application(environ, start_response):
             arguments[master_argument] = None
 
     if arguments['function'] == None or arguments['callback'] == None:
-        return wsgi_error( environ, start_response, "No function or callback provided." )
+        return wsgi_error( environ, start_response, "Nope dot com. No function or callback provided." )
     functionname = arguments['function']
     
     try: 
