@@ -1,12 +1,13 @@
 // The API for communicating with the Python WSGI server. 
 
 var flup = {
-    server_address:"http://192.168.182.131:8000/",
+    server_address: "http://"+document.domain+":8000/",
     timeout:3000,  
  
     do_function:function( function_name, args )
     {
         console.log("Flup api: Function " + function_name );
+	console.log("Address: " + flup.server_address );
         var function_complete = false;
         args['function'] = function_name; 
 
