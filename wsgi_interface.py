@@ -23,7 +23,7 @@ def wsgi_error(environ, start_response, error):
     start_response(status, response_headers)
     return [ error ] 
 
-def simple_app(environ, start_response):
+def application(environ, start_response):
     """ Functions set to the app come in the format: 
         :8080/?function=start_game&callback=awesome&arg1=blah ... 
         This app connects to the public_interface.py interface
@@ -89,8 +89,9 @@ def simple_app(environ, start_response):
     print
     return [ arguments['callback'] + "(" + json.dumps( response, indent=4 )+")" ]
 
-httpd = make_server('', 8000, simple_app)
-print "Serving HTTP on port 8000..."
-
-# Respond to requests until process is killed
-httpd.serve_forever()
+if __name__ == "__main__":
+    httpd = make_server('', 8000, application)
+    print "Serving HTTP on port 8000..."
+    
+    # Respond to requests until process is killed
+    httpd.serve_forever()
