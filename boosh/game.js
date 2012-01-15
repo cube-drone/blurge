@@ -124,13 +124,15 @@ var game = {
         if( move.movename === "setToken" || move.movename === "placeToken" ){
             $(game.grid_element).grid( 'place', move.x, move.y, token_lib.create_token( move.token ) );  
             // render this space unusable
-            $(game.grid_element).grid( 'get', move.x, move.y).droppable('option', 'disabled', true )
+            $(game.grid_element).grid( 'get', move.x, move.y).droppable('option', 'disabled', true );
+            $(game.grid_element).grid( 'get', move.x, move.y).effect('highlight', { }, 2000);
         }
         else if( move.movename === "clearToken")
         {
             $(game.grid_element).grid( 'clear', move.x, move.y );  
             // this space becomes usable again. 
             $(game.grid_element).grid( 'get', move.x, move.y).droppable('option', 'disabled', false )
+            $(game.grid_element).grid( 'get', move.x, move.y).effect('highlight', { }, 2000);
         }
         else if( move.namename === "doNothing" )
         {
@@ -151,6 +153,7 @@ var game = {
         var diff = new_counter - game.failure_counter;
         game.failure_counter = new_counter;
         $(game.failure_counter_element).val( new_counter );
+        $(game.failure_counter_element).effect('highlight', {}, 2000);
     },
     loading: function( is_loading )
     {

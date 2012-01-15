@@ -20,7 +20,7 @@ class Game( object ):
         operations are performed on it. 
     """
     def __init__(self):
-        self.laziness = 30 #If we've already found 30 solutions, stop looking. 
+        self.laziness = 5 #If we've already found 30 solutions, stop looking. 
         self.minimumTimeBetweenBombs = 12
         self.minimumTimeBetweenJokers = 10
     
