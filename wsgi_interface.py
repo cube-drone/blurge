@@ -50,8 +50,8 @@ def application(environ, start_response):
     
     try: 
         if functionname == "pull":
-            import commands
-            response = commands.getoutput('bash git_reload &') 
+            import subprocess
+            subprocess.call("bash git_reload", shell=True)
         elif functionname == "start_game":
             response = public_interface.start_game( arguments['width'], 
                                                     arguments['height'],
