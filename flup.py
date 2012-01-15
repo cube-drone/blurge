@@ -207,7 +207,15 @@ class Game( object ):
             if fustulated_token == obfuscator[i]:
                 return self.tokens[i]
     
-    def attemptMove( self, point ):
+    def sequenceNumberOfLastMove( self ):
+        return self.grid.moves[ len( self.grid.moves ) - 1 ][0]
+    
+    def sequenceCheck( self, sequenceNumber ):
+        if sequenceNumber < self.sequenceNumberOfLastMove():
+            raise Exception( "Trying to play a move out of sequence.") 
+
+    def attemptMove( self, point, sequenceNumberOfLastMove ):
+        self.sequenceCheck( sequenceNumberOfLastMove ) 
         success = self.grid.placeToken( self.currentToken, point )
         if success:
             self.setupNextTurn()
@@ -217,7 +225,8 @@ class Game( object ):
             self.failure()
             return False
     
-    def hint( self ):
+    def hint( self, sequenceNumberOfLastMove ):
+        self.sequenceCheck( sequenceNumberOfLastMove ) 
         token_point = self.solveOneStep([self.currentToken])
         if token_point:
             token, point = token_point
@@ -230,7 +239,7 @@ class Game( object ):
             self.setupNextTurn()
             return True 
         else:
-            return self.hint()
+            return self.hint( sequenceNumberOfLastMove )
 
     def setupNextTurn(self):
         if self.currentToken.name() == tokens.Bomb().name() :

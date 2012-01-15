@@ -9,22 +9,31 @@ var game = {
     failure_counter: 0,
     failure_counter_element: ".failure_counter",
     hint_element: ".hint",
+    new_game_element: ".new_game", 
+    is_loading: false,
     setup: function( gamestate )
     {
+        game.loading( false );
         game.gamestate = gamestate;
         $(game.grid_element).grid( { x:gamestate.width, y:gamestate.height,size: 50, drop_token:game.drop_token } ); 
         $(game.container_element).boxy( ); 
         $(game.hint_element).click(game.hint);
+        $(game.new_game_element).click(game.new_game);
         console.log( gamestate.tokens );
         game.update( gamestate );
         
         console.log( game); 
+    },
+    new_game: function( )
+    {
+        window.location = "index.html";  
     },
     error_fn: function( message )
     {
         return function(){
             console.log( message );
             game.message( message );
+            game.loading( false );
         }
     },
     message: function( message )
@@ -33,6 +42,7 @@ var game = {
     },
     update: function( result )
     {
+        game.loading( false );
         console.log( result );
         game.is_still_playable( result );
         if( result.success === false ) 
@@ -59,6 +69,7 @@ var game = {
     },
     drop_token: function( token, x, y )
     {
+        game.loading( true );
         flup.attempt_move( { 
             mongo_id: game.mongo_id,
             point: x + "-" + y,
@@ -70,10 +81,16 @@ var game = {
     },
     hint: function( )
     {
+        if( game.is_loading)
+        {
+            return; 
+        }
+        game.loading( true );
         flup.hint( { 
             mongo_id: game.mongo_id,
             last_move: game.last_move,
-            success_callback: game.update
+            success_callback: game.update, 
+            failure_callback: game.error_fn( "Can't find the server. Hint failed.") 
         });
     },
     is_still_playable: function( result )
@@ -134,6 +151,23 @@ var game = {
         var diff = new_counter - game.failure_counter;
         game.failure_counter = new_counter;
         $(game.failure_counter_element).val( new_counter );
+    },
+    loading: function( is_loading )
+    {
+        if(game.is_loading === is_loading)
+        {
+            return;
+        }
+        if(is_loading) 
+        {
+            game.is_loading = true;
+            document.body.style.cursor = "wait"; 
+        }
+        if(! is_loading )
+        {
+            game.is_loading = false;
+            document.body.style.cursor = "default";
+        }
     }
 
 }
@@ -144,6 +178,7 @@ $(document).ready(function() {
     if( game.mongo_id === undefined ){
         window.location = "index.html";
     }
+    game.loading( true );
     
     flup.get_complete_state( { 
         mongo_id: game.mongo_id,

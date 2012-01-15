@@ -73,7 +73,7 @@ def attempt_move( mongo_id, point, last_move ):
     g = load_game( mongo_id )
     print "Attempting To Play  ", g.currentToken.name(), " at ", point
 
-    if g.attemptMove( point ):
+    if g.attemptMove( point, last_move ):
         g.save()
         return { u'success': True, 
                  u'update': __update( g, last_move ), 
@@ -91,7 +91,7 @@ def hint( mongo_id, last_move ):
     if last_move == None:
         last_move = -1
     g = load_game( mongo_id )
-    g.hint()
+    g.hint( last_move )
     g.save()
     return { u'success': True, 
              u'update': __update( g, last_move ), 
