@@ -2,18 +2,18 @@
 
 $(document).ready(function() {
     $( "#width" ).slider({
-            value:10,
+            value:7,
             min: 5,
-            max: 50,
+            max: 12,
             slide: function( event, ui ) { 
                 $( "#width_amount" ).val( ui.value );
                 }
             });
 
     $( "#height" ).slider({
-            value:10,
+            value:7,
             min: 5,
-            max: 50,
+            max: 12,
             slide: function( event, ui ) { 
                 $( "#height_amount" ).val( ui.value );
                 }
@@ -34,10 +34,9 @@ $(document).ready(function() {
             width: $( "#width_amount" ).val(),
             height: $( "#height_amount" ).val(),
             ntokens: $( "#ntokens_amount").val(),
-            success_callback: function(){ alert("yay"); } 
+            success_callback: function(mongo_id){ window.location = "game.html#" + mongo_id; }
         });
     } 
     );
-
 });
 

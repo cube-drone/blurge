@@ -16,4 +16,6 @@ def unserialize_move( move ):
 
 def obfuscate_move( move, game ):
     movecounter, movename, token, point = move
+    if token.name() == tokens.InvisibleToken().name():
+        return ( movecounter, 'doNothing', "", (0,0) ) 
     return ( movecounter, movename, game.obfuscateToken( token ), point ) 

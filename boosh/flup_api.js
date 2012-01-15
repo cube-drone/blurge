@@ -1,44 +1,69 @@
+// The API for communicating with the Python WSGI server. 
+
 var flup = {
-    server_address:"http://192.168.182.131:8000/",
-
-    create_url:function( function_name, args )
+    server_address: "http://"+document.domain+":8000/",
+    timeout:3000,  
+ 
+    do_function:function( function_name, args )
     {
-        url = flup.server_address;
-        url = url + function_name + "/"
-        for( var key in args )
-        {
-            url = url + key + "=" + args[key] + "/"
-        }
-        return url
-    },
+        console.log("Flup api: Function " + function_name );
+	console.log("Address: " + flup.server_address );
+        var function_complete = false;
+        args['function'] = function_name; 
 
-    start_game:function( args )
-    {
-        var function_name = "start_game" 
-        var function_args = {}
-        function_args.width = 'width' in args ? args.width : 10;
-        function_args.height = 'height' in args ? args.height : 10;
-        function_args.ntokens = 'ntokens' in args ? args.ntokens : 5;
-        function_args.gametype = 'gametype' in args ? args.gametype : 'Default';
-        function_args.nturns = 'nturns' in args ? args.nturns : 5;
-        if( !'success_callback' in args)
-        {
-            return;
-        }
         var success_callback = args.success_callback;
-        var failure_callback = 'failure_callback' in args ? args.failure_callback : function()
-        { 
-            alert("Game creation failed.");  
-        };
+        delete args.success_callback;
+        
+        var failure_callback = 'failure_callback' in args ? args.failure_callback : function() {
+            console.log( function_name + " timed out." ); 
+        } 
+        delete args.failure_callback;
 
-        var service_url = flup.create_url( function_name, function_args);
-        
-        $.getJSON(service_url, function(data) {
-            alert( "HURP: " + data );
-            console.log( data );
-        });
-        
-    } 
+        var callback_time = 'timeout' in args ? args.timeout : flup.timeout; 
+        delete args.timeout;
+
+        var t = setTimeout( function(){
+            if( function_complete === true ){ return; };
+            function_complete = true;
+            console.log("Failure callback: ")
+            failure_callback();
+        }, callback_time );
+ 
+        $.ajax({
+          url: flup.server_address,
+          dataType: 'jsonp',
+          data: args,
+          success: function( data ) {
+            if( function_complete === true ){ return; }  
+            function_complete = true; 
+            success_callback(data);
+            }, 
+        });       
+    },
+    
+    start_game:function( args )
+    /* Args: 'width', 'height', 'ntokens', 'gametype', 'nturns' */
+    {
+        flup.do_function( 'start_game', args );
+    },
+   
+    get_complete_state:function( args )
+    /* Args: 'mongo_id'*/
+    { 
+        flup.do_function( 'get_complete_state', args );
+    },
+    
+    attempt_move:function( args )
+    /* Args: 'mongo_id', 'point', 'last_move' */ 
+    {
+        flup.do_function( 'attempt_move', args );
+    },  
+    
+    hint: function( args)
+    /* Args: 'mongo_id', 'last_move' */
+    {
+        flup.do_function( 'hint', args );
+    },
 }
 
 

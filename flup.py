@@ -19,6 +19,10 @@ class Game( object ):
         The game object must be generate()d or load()ed before any further
         operations are performed on it. 
     """
+    def __init__(self):
+        self.laziness = 60 #If we've already found 30 solutions, stop looking. 
+        self.minimumTimeBetweenBombs = 12
+        self.minimumTimeBetweenJokers = 10
     
     def generate( self, width=10, height=10, gametype="Default", ntokens=8,
                     nturns=10):
@@ -34,15 +38,15 @@ class Game( object ):
         self.grid = Grid( width, height )
         self.tokens = tokens.selectRandomNTokens( ntokens )  
         self.nturns = nturns
-        self.laziness = 30 #If we've already found 30 solutions, stop looking. 
-        self.gamestate = "Playable" # "Playable" || "Unplayable" 
+        self.gamestate = "Playable" # "Playable" || "Win" || "Lose"  
         self.mongo_id = 0 #The mongo_db id of this game record. 
         self.gametype = gametype
-        # This isn't valid, but should be overwritten by the 
+        # an invisible currentToken isn't valid, but should be overwritten by the 
         # self.selectValidToken() call. 
         self.currentToken = tokens.InvisibleToken() 
-        
-        print self.tokens
+        self.failureCounter = 10
+        self.lastBomb = 0 #Too many bombs make the game unplayable. 
+        self.lastJoker = 0 #Too many jokers make the game confusing. 
             
         # Initialize Board
         if self.gametype == "Clear":
@@ -55,6 +59,7 @@ class Game( object ):
         self.selectValidToken()
     
     def load( self ):
+        print "Loading..."
         mongo_object = self.games_database().find_one({u'_id':
                                         ObjectId(self.mongo_id)} ) 
         self.width = int(mongo_object[u'width'])
@@ -63,27 +68,44 @@ class Game( object ):
         self.tokens = [ tokens.deserialize( token ) for token in
                                 mongo_object[u'tokens'] ] 
         self.currentToken = tokens.deserialize( mongo_object[u'currentToken'] )
-        self.laziness = mongo_object[u'laziness']
         self.gametype = mongo_object[u'gametype']
         self.gamestate = mongo_object[u'gamestate']
+        self.mongo_id = mongo_object[u'_id'] 
+        self.failureCounter = mongo_object[u'failureCounter']
+        self.lastBomb = mongo_object[u'lastBomb']
+        self.lastJoker = mongo_object[u'lastJoker']
         
         self.grid.unserialize( mongo_object[u'grid'] )
-        pass
+        print "Load complete." 
     
     def save( self):
         """ Save the entirety of the game state to mongodb. """
+        print "Saving..." 
         document = {"width": self.width, 
                     "height": self.height, 
-                    "laziness": self.laziness, 
                     "gamestate": self.gamestate,
+                    "balls": "hello",
                     "gametype": self.gametype,
                     "tokens" : [ token.serialize() for token in self.tokens ],  
                     "currentToken": self.currentToken.serialize(),
-                    "grid": self.grid.serialize() }  
+                    "grid": self.grid.serialize(),
+                    "failureCounter":self.failureCounter, 
+                    "lastBomb":self.lastBomb,  
+                    "lastJoker":self.lastJoker}  
         if self.mongo_id == 0:
             self.mongo_id = self.games_database().insert( document )
         else:
-            self.games_database().update({'_id':self.mongo_id},{'$set':document}) 
+            print "\t",self.games_database().update({u'_id':self.mongo_id}, document,
+                safe=True ) 
+        print "Save complete." 
+
+    def success( self ):
+        self.failureCounter += 1
+    
+    def failure( self ):
+        self.failureCounter -= 1 
+        if self.failureCounter <= 0:
+            self.gamestate = "Lose"
 
     def games_database( self ):
         connection = Connection()  
@@ -107,11 +129,15 @@ class Game( object ):
     
     def selectValidToken( self ):
         """ Set a verifiably playable token to the current token. """
+        print "Planning Next Token..... " 
         result = self.solveOneStep()
         if not result: 
-            self.gameState = "Unplayable" 
+            print "Gamestate: Win"
+            self.gamestate = "Win" 
             return 
         token, point = result
+        print "Next Token: ", token
+        print "Next Point: ", point
         self.currentToken = token
     
     def completelySolve( self ):
@@ -138,14 +164,14 @@ class Game( object ):
             as a tuple (token, point).  """ 
         if temp_tokens == []:
             temp_tokens = copy.deepcopy( self.tokens ) 
-        #print "Solving one step with tokens ", temp_tokens 
+        print "\tSolving one step with tokens ", temp_tokens 
         test_token = random.choice( temp_tokens )
-        #print "Attempting", test_token.name()
+        print "\tAttempting", test_token.name()
         
         valid_placements = self.solveForToken( test_token ) 
-        #print "Valid Placements: ", valid_placements
+        print "\tValid Placements: ", valid_placements
         if len(valid_placements) == 0 and len(temp_tokens) <= 1:
-            #print "No valid placements for ", test_token.name()
+            print "\tNo valid placements for ", test_token.name()
             return False
         if len(valid_placements) == 0:
             temp_tokens.remove( test_token )
@@ -154,6 +180,13 @@ class Game( object ):
     
     def solveForToken( self, token ):
         """ Returns all valid placements for the token. """ 
+        if token.name() == tokens.Bomb().name() :
+            if self.lastBomb < self.minimumTimeBetweenBombs:
+                return []  
+        if token.name() == tokens.Joker().name() :
+            if self.lastJoker < self.minimumTimeBetweenJokers:
+                return []  
+
         valid_placements = [] 
         for point in self.grid.points():
             if token.isValid( self.grid, point) and not self.grid.isAnyTokenAtPoint( point ):
@@ -161,14 +194,10 @@ class Game( object ):
             if len( valid_placements ) > self.laziness:
                 break
         return valid_placements
-
-        place_point = random.choice(valid_placements)
-        # print test_token.name(), place_point
-        return ( test_token, place_point ) 
     
     def obfuscateToken( self, token ):
         """ Obfuscate the token using the current set of obfuscation rules. """
-        for i in range( 0, len(self.tokens) - 1 ):
+        for i in range( 0, len(self.tokens) ):
             if self.tokens[i].name() == token.name():
                 return obfuscator[i] 
     
@@ -178,9 +207,51 @@ class Game( object ):
             if fustulated_token == obfuscator[i]:
                 return self.tokens[i]
     
-    def attemptMove( self, token, point ):
+    def sequenceNumberOfLastMove( self ):
+        return self.grid.moves[ len( self.grid.moves ) - 1 ][0]
+    
+    def sequenceCheck( self, sequenceNumber ):
+        if sequenceNumber < self.sequenceNumberOfLastMove():
+            raise Exception( "Trying to play a move out of sequence.") 
+
+    def attemptMove( self, point, sequenceNumberOfLastMove ):
+        self.sequenceCheck( sequenceNumberOfLastMove ) 
+        success = self.grid.placeToken( self.currentToken, point )
+        if success:
+            self.setupNextTurn()
+            self.success()
+            return True
+        else:
+            self.failure()
+            return False
+    
+    def hint( self, sequenceNumberOfLastMove ):
+        self.sequenceCheck( sequenceNumberOfLastMove ) 
+        token_point = self.solveOneStep([self.currentToken])
+        if token_point:
+            token, point = token_point
+        else:
+            self.gamestate = "Win"
+            return False
+
+        if self.grid.placeToken( token, point ):
+            self.failure()
+            self.setupNextTurn()
+            return True 
+        else:
+            return self.hint( sequenceNumberOfLastMove )
+
+    def setupNextTurn(self):
+        if self.currentToken.name() == tokens.Bomb().name() :
+            self.lastBomb = 0
+        else:
+            self.lastBomb += 1
+        if self.currentToken.name() == tokens.Joker().name() :
+            self.lastJoker = 0
+        else:
+            self.lastJoker += 1
         self.selectValidToken()
-        return self.grid.placeToken( token, point )
+        return
     
     def __repr__(self):
         ret = ""
@@ -211,7 +282,10 @@ def __test_obfuscation():
     obfuscated_token = g.obfuscateToken( tokens.Joker() )
     original_token = g.deobfuscateToken( obfuscated_token ) 
     assert( original_token.name() == tokens.Joker().name() )
+    obfuscated_set = [ g.obfuscateToken( token ) for token in g.tokens ] 
+    assert( obfuscated_set[0] == "A" )
+    assert( obfuscated_set[-1] == "L" ) 
 
 if __name__ == '__main__':
-    __test_generate_save_and_load() 
+    #__test_generate_save_and_load() 
     __test_obfuscation()

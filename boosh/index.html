@@ -2,27 +2,57 @@
 <html> 
 <head>
 <meta charset="utf-8">
-<title>Boop</title>
+<title>Create Game</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="ui-lightness/jquery-ui-1.8.16.custom.css">
 </head>
-<body>
+<body id='home'>
 <div>
 
+    <div class='intro'>
+    <h1>The Watchmaker's Dilemma </h1>
+    <p><em> Place tokens. </em></p>
+    <p><em> Put them in the right place. </em> </p>
+    <p><em> Don't put them in the wrong place. </em> </p>
+    <p><em> You will lose if you screw up too much. </em> </p>
+    <p><em> Each token is a little different. </em> </p> 
+    <p><em> Each game is a little different. </em> </p> 
+    <p><em> This is an early build. </em> </p> 
+    <p><em> Not even any style, yet. </em> </p> 
+    <p><em> This is <a href='http://curtis.lassam.net'>me.</a> </em> </p>
+    </div>
 
-    <div class="cube_grid" style="
-                margin: auto;
-                width: 300px;
-                height: 300px;
-            ">
+    <div id='create'>
+    <h2> Create New Game </h2>
+
+    <h3> Width </h> 
+    <div id='width'> </div> <!-- Slider, 5-50 --> 
+    <input class='slider_amt' readonly='readonly' type="text" id="width_amount" value='7' />
+    
+    <h3> Height </h3>
+    <div id='height'> </div> <!-- Slider 5-50 -->
+    <input class='slider_amt' readonly='readonly' type="text" id="height_amount" value='7'/>
+    
+    <h3> Number Of Token Types </h3>
+    <div id='ntokens'> </div> <!-- Slider, 1-10 -->
+    <input class='slider_amt' readonly='readonly' type="text" id="ntokens_amount" value='5' />
+ 
+    <h3> Ready? </h3>
+    <input id='start_game' style='float: right;' type='button' value="Go!" > </input>
+    <div style='clear:both;'> </div>
+
     </div>
 
 
-
 </div> 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="console_fake.js"> </script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="jquery-1.6.2.min.js"><\/script>')</script>
-<script src="cube_grid.js"></script>
-<script src="mouse_velocity.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+
+<script src="flup_api.js"> </script>
+<script src="create_game.js"> </script>
+
 </body>
 </html>

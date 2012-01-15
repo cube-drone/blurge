@@ -1,21 +1,176 @@
+#home
+{
+    max-width: 700px;
+    margin: auto;
+}
 
-#create
+.intro
 {
     width: 300px;
-    margin: 20px auto;
+    margin: 10px;
     padding: 10px;
     border: 1px solid #999;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
+    float: left;
 }
 
+#create
+{
+    width: 300px;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #999;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    float: left;
+}
 
 .slider_amt
 {
     border: none;
     font-size: large;
     font-weight: bold;
+}
 
+/* */
+#game
+{
+    margin: 0;
+}
 
+.grid_container
+{
+    background-color: black;
+    width: 100%; 
+    margin: 0;
+    height: 600px;
+    min-height: 100%;
+    padding: 20px;
+}
+
+.cube_grid
+{
+    width: 300px;
+    margin: auto;
+}
+
+.cube_grid table
+{
+    background-color: white;
+    border: 1px solid gray;
+    cursor: move;
+}
+
+.gridsquare 
+{
+    
+}
+
+.gridsquare.even
+{
+    background-color: blue;
+}
+
+.drop_target
+{
+    opacity: 0.5;
+}
+
+.drop_target.odd
+{
+    background-color: pink;
+}
+
+.drop_target_hover
+{
+    opacity: 0.2;
+}
+
+.null
+{
+    visibility: hidden;
+}
+
+.token
+{
+    border: 2px solid black;
+    height: 98%;
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    border-radius: 100px;
+    text-align: center;
+}
+
+.A
+{
+    background-color: green;
+}
+
+.B
+{
+    background-color: blue;
+}
+
+.C
+{
+    background-color: red;
+}
+
+.D
+{
+    background-color: gray;
+}
+
+.E
+{
+    background-color: pink;
+}
+
+.F
+{
+    background-color: orange;
+}
+
+.G
+{
+    background-color: aqua;
+}
+
+.H
+{
+    background-color: salmon;
+}
+
+.I
+{
+    background-color: #FEFEFE;
+}
+
+.J
+{
+    background-color: purple;
+}
+
+.sidebar
+{
+    position: absolute;
+    position: fixed;
+    left: 0px;
+    top: 20px; 
+}
+
+.sidebar_container
+{
+    padding: 20px;
+    background-color: white;
+    border-right: 2px solid gray;
+    border-top: 2px solid gray;
+    border-bottom: 2px solid gray; 
+}
+
+.next_container
+{
 }

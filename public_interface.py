@@ -2,31 +2,51 @@ from flup import Game
 from moves import obfuscate_move 
 
 def start_game( width=10, height=10, gametype="Default", ntokens=8, nturns=10): 
+    print "=== Start Game === " 
+    if width == None:
+        width = 10
+    if height == None:
+        height = 10
+    if gametype == None:
+        gametype = "Default"
+    if ntokens == None:
+        ntokens = 8
+    if nturns == None:
+        nturns = 10
     g = Game()
     g.generate( width, height, gametype, ntokens, nturns)
     g.save()
-    return g.mongo_id 
+    return str(g.mongo_id) 
 
 def load_game( mongo_id ):
+    if mongo_id == None:
+        raise Exception( "mongo_id is required" )
     g = Game()
     g.mongo_id = mongo_id
     g.load()
     return g
 
 def get_complete_state( mongo_id ): 
+    print "=== Get Complete State ==="
     g = load_game( mongo_id ) 
     return_object = { 
         u'width': g.width,
         u'height': g.height, 
-        u'moves': [ obfuscate_move( move, g) for move in g.grid.moves ],
+        #u'tokens': [ g.obfuscateToken( token) for token in g.tokens ], 
+        u'tokens': [ token.name() for token in g.tokens ],
+       
+        u'success': True, 
+        u'update': [ obfuscate_move( move, g) for move in g.grid.moves ],
+        u'failureCounter': g.failureCounter, 
+        u'playable': g.gamestate,
         u'currentToken': g.obfuscateToken( g.currentToken ),
-        u'tokens': [ g.obfuscateToken( token) for token in g.tokens ], 
-        #u'tokens': [ token.name() for token in g.tokens ],
-        u'gamestate': g.gamestate
     } 
     return return_object 
 
 def get_update( mongo_id, last_move ):
+    print "=== Get Update ==="
+    if last_move == None:
+        last_move = -1
     g = load_game( mongo_id )
     return __update( g, last_move )
 
@@ -39,29 +59,53 @@ def __update( game, last_move ):
     return moves
 
 def get_gamestate( mongo_id ):
+    print "=== Get Gamestate ===" 
     g = load_game( mongo_id )
-    return __gamestate( g )
+    return g.gamestate
 
-def __gamestate( game ):
-    return game.gamestate
+def attempt_move( mongo_id, point, last_move ):
+    print "=== Attempt Move ===" 
+    if point == None:
+        raise Exception( "point is required" )
+    if last_move == None:
+        last_move = -1
 
-def attempt_move( mongo_id, obfuscated_token, point, last_move ):
     g = load_game( mongo_id )
-    token = g.deobfuscateToken( obfuscated_token )
-    if g.currentToken.name() != token.name():
-        return False
-    if g.attemptMove( token, point ):
+    print "Attempting To Play  ", g.currentToken.name(), " at ", point
+
+    if g.attemptMove( point, last_move ):
         g.save()
-        return { u'update': __update( g, last_move ), 
-                u'playable': __gamestate( g ) } 
+        return { u'success': True, 
+                 u'update': __update( g, last_move ), 
+                 u'failureCounter': g.failureCounter ,
+                 u'playable': g.gamestate, 
+                 u'currentToken': g.obfuscateToken( g.currentToken ) } 
     else:
-        return False
+        g.save()
+        return { u'success': False,
+                 u'playable': g.gamestate,
+                 u'failureCounter': g.failureCounter }
+
+def hint( mongo_id, last_move ):
+    print "=== Hint ===" 
+    if last_move == None:
+        last_move = -1
+    g = load_game( mongo_id )
+    g.hint( last_move )
+    g.save()
+    return { u'success': True, 
+             u'update': __update( g, last_move ), 
+             u'failureCounter': g.failureCounter,
+             u'playable': g.gamestate, 
+             u'currentToken': g.obfuscateToken( g.currentToken ) } 
 
 if __name__ == '__main__':
     mongo_id = start_game()
     state = get_complete_state(mongo_id)
     update = get_update( mongo_id, -1 )
     gamestate = get_gamestate( mongo_id )
+    print "Gamestate: ", state 
+    print gamestate
     
     lastmove = update[ len( update ) -1 ] 
     counter, blah, blor, blop = lastmove
