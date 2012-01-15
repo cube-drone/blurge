@@ -11,6 +11,9 @@ var game = {
     hint_element: ".hint",
     new_game_element: ".new_game", 
     is_loading: false,
+    token_obfuscators: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
+"L", "M", "N", "O", "P", "Q", "R"], 
+    token_class_mappings: {},
     setup: function( gamestate )
     {
         game.loading( false );
@@ -19,6 +22,13 @@ var game = {
         $(game.container_element).boxy( ); 
         $(game.hint_element).click(game.hint);
         $(game.new_game_element).click(game.new_game);
+        
+        for( var i = 0; i < gamestate.tokens.length; i++ )
+        {
+            game.token_class_mappings[ game.token_obfuscators[i] ] = gamestate.tokens[i];
+        }
+        console.log( game.token_class_mappings );
+        
         console.log( gamestate.tokens );
         game.update( gamestate );
         
@@ -122,7 +132,7 @@ var game = {
     {
         move =  move_lib.move_to_object(move);
         if( move.movename === "setToken" || move.movename === "placeToken" ){
-            $(game.grid_element).grid( 'place', move.x, move.y, token_lib.create_token( move.token ) );  
+            $(game.grid_element).grid( 'place', move.x, move.y, token_lib.create_token( move.token, game.token_class_mappings[move.token]  ) );  
             // render this space unusable
             $(game.grid_element).grid( 'get', move.x, move.y).droppable('option', 'disabled', true );
             $(game.grid_element).grid( 'get', move.x, move.y).effect('highlight', { }, 2000);
