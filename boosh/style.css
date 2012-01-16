@@ -1,11 +1,36 @@
 #home
 {
-    max-width: 700px;
-    margin: auto;
+    background: #ddd;
+}
+
+.title
+{
+    position: fixed;
+    height: 2130px;
+    width: 2130px;
+    top: -1062px;
+    left: -1062px;
+}
+
+.title_clock
+{
+    height: 2130px;
+    width: 2130px;
+    position: absolute;
+    background: url("tokens/title_silhouette.png");
+}
+
+.title_hand
+{
+    height: 2130px;
+    width: 2130px;
+    position: absolute;
+    background: url("tokens/title_hand.png");
 }
 
 .intro
 {
+    visibility: hidden;
     width: 300px;
     margin: 10px;
     padding: 10px;
@@ -25,7 +50,10 @@
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
-    float: left;
+    background-color: white;
+    position: absolute;
+    left: 10px;
+    top: 50px;
 }
 
 .slider_amt
