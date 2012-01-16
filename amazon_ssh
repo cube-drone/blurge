@@ -1,0 +1,1 @@
+ssh -i Fluttershy.pem ubuntu@50.112.114.149
