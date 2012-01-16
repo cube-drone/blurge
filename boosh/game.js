@@ -18,7 +18,7 @@ var game = {
     {
         game.loading( false );
         game.gamestate = gamestate;
-        $(game.grid_element).grid( { x:gamestate.width, y:gamestate.height,size: 50, drop_token:game.drop_token } ); 
+        $(game.grid_element).grid( { x:gamestate.width, y:gamestate.height, size:52, drop_token:game.drop_token } ); 
         $(game.container_element).boxy( ); 
         $(game.hint_element).click(game.hint);
         $(game.new_game_element).click(game.new_game);
@@ -153,7 +153,7 @@ var game = {
     next_token: function( )
     {
         var token_element = $(game.next_token_element)
-        token_element.html( token_lib.create_token( game.gamestate.currentToken ).draggable({
+        token_element.html( token_lib.create_token( game.gamestate.currentToken, game.token_class_mappings[game.gamestate.currentToken] ).draggable({
             revert:'invalid' 
         } )); 
     },

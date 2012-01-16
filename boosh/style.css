@@ -71,7 +71,7 @@
 
 .gridsquare.even
 {
-    background-color: blue;
+    background-color: #F59ABF;
 }
 
 .drop_target
@@ -81,7 +81,7 @@
 
 .drop_target.odd
 {
-    background-color: pink;
+    background-color: #F2C9DA;
 }
 
 .drop_target_hover
@@ -92,66 +92,6 @@
 .null
 {
     visibility: hidden;
-}
-
-.token
-{
-    border: 2px solid black;
-    height: 98%;
-    -moz-border-radius: 100px;
-    -webkit-border-radius: 100px;
-    border-radius: 100px;
-    text-align: center;
-}
-
-.A
-{
-    background-color: green;
-}
-
-.B
-{
-    background-color: blue;
-}
-
-.C
-{
-    background-color: red;
-}
-
-.D
-{
-    background-color: gray;
-}
-
-.E
-{
-    background-color: pink;
-}
-
-.F
-{
-    background-color: orange;
-}
-
-.G
-{
-    background-color: aqua;
-}
-
-.H
-{
-    background-color: salmon;
-}
-
-.I
-{
-    background-color: #FEFEFE;
-}
-
-.J
-{
-    background-color: purple;
 }
 
 .sidebar

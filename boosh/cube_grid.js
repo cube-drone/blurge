@@ -15,19 +15,23 @@
         var drop_token = options.drop_token;
 
         var total_height = y * size;
-        var total_width = x * size; 
+        var total_width = (x+1) * size; 
 
-        var outer_div = $("<div style='position: absolute; top:0; width:"+total_width+"px; height:"+total_height+"px;' ></div>");
+        var outer_div = $("<div style='position: absolute; top:0;width:"+total_width+"px; height:"+total_height+"px;' ></div>");
         var table = $("<table style='table-layout:fixed;'></table>");
 
         console.log("Manufacturing grid." );
+        for( var j = 0; j < x; j++)
+        {
+            table.append("<col width='"+size+"px'></col>");
+        }
         for( var i = 0; i < y; i++ ) 
         {
             var table_row = $("<tr></tr>");
             for( var j = 0; j < x; j++)
             {
                 var odd = (i + j) % 2 == 0 ? 'even' : 'odd';
-                var grid_square = $("<td class='x_"+j+" y_"+(y-i-1)+" gridsquare "+odd+"' style='height:"+size+"px; width:"+size+"px;'></td>")
+                var grid_square = $("<td class='x_"+j+" y_"+(y-i-1)+" gridsquare "+odd+"' style='height:"+size+"px; width:"+size+"px; min-height="+size+"px;min-width="+size+"px; overflow=hidden; ' ></td>")
                 grid_square.data("x",j).data("y", (y-i-1)) ;
                 var click_fn = function( grid_square)
                 {

@@ -1,0 +1,110 @@
+.token
+{
+    height: 51px;
+    width: 51px;
+}
+
+.A
+{
+    background-color: green;
+}
+
+.B
+{
+    background-color: blue;
+}
+
+.C
+{
+    background-color: red;
+}
+
+.D
+{
+    background-color: gray;
+}
+
+.E
+{
+    background-color: pink;
+}
+
+.F
+{
+    background-color: orange;
+}
+
+.G
+{
+    background-color: aqua;
+}
+
+.H
+{
+    background-color: salmon;
+}
+
+.I
+{
+    background-color: #FEFEFE;
+}
+
+.J
+{
+    background-color: purple;
+}
+
+.Knight
+{
+    background: url( "tokens/token_sprite.png" ) 0 0; 
+}
+
+.Pawn
+{
+    background: url( "tokens/token_sprite.png" ) 51px 0; 
+}
+
+.Checker
+{
+    background: url( "tokens/token_sprite.png" ) 102px 0; 
+}
+
+.King
+{
+    background: url( "tokens/token_sprite.png" ) 153px 0; 
+}
+
+.Bomb
+{
+    background: url( "tokens/token_sprite.png" ) 204px 0; 
+}
+
+.Glob
+{
+    background: url( "tokens/token_sprite.png" ) 255px 0; 
+}
+
+.Parasite
+{
+    background: url( "tokens/token_sprite.png" ) 306px 0; 
+}
+
+.Bishop
+{
+    background: url( "tokens/token_sprite.png" ) 357px 0; 
+}
+
+.Joker
+{
+    background: url( "tokens/token_sprite.png" ) 408px 0; 
+}
+
+.Rook
+{
+    background: url( "tokens/token_sprite.png" ) 459px 0; 
+}
+
+.Brick
+{
+    background: url( "tokens/token_sprite.png" ) 510px 0; 
+}
