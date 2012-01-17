@@ -1,7 +1,8 @@
 from flup import Game
 from moves import obfuscate_move 
 
-def start_game( width=10, height=10, gametype="Default", ntokens=8, nturns=10): 
+def start_game( width=10, height=10, gametype="Default", ntokens=8, nturns=10,
+                scramble=False): 
     print "=== Start Game === " 
     if width == None:
         width = 10
@@ -13,8 +14,10 @@ def start_game( width=10, height=10, gametype="Default", ntokens=8, nturns=10):
         ntokens = 8
     if nturns == None:
         nturns = 10
+    if scramble == None:
+        scramble = False
     g = Game()
-    g.generate( width, height, gametype, ntokens, nturns)
+    g.generate( width, height, gametype, ntokens, nturns, scramble)
     g.save()
     return str(g.mongo_id) 
 
@@ -32,15 +35,16 @@ def get_complete_state( mongo_id ):
     return_object = { 
         u'width': g.width,
         u'height': g.height, 
-        #u'tokens': [ g.obfuscateToken( token) for token in g.tokens ], 
-        u'tokens': [ token.name() for token in g.tokens ],
+        #u'tokens': [ token.name() for token in g.tokens ],
        
         u'success': True, 
         u'update': [ obfuscate_move( move, g) for move in g.grid.moves ],
         u'failureCounter': g.failureCounter, 
         u'playable': g.gamestate,
         u'currentToken': g.obfuscateToken( g.currentToken ),
-    } 
+    }
+    if not g.scramble:
+         return_object[u'tokens'] = [ token.name() for token in g.tokens ] 
     return return_object 
 
 def get_update( mongo_id, last_move ):

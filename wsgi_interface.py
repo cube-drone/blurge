@@ -13,7 +13,8 @@ master_arguments = {
     'ntokens': lambda x: int(x),
     'token': lambda x: str(x),
     'point': lambda x: (int(x.split('-')[0]), int(x.split('-')[1]) ),
-    'function': lambda x: str(x)
+    'function': lambda x: str(x),
+    'scramble': lambda x: True if x and x != "false" else False
 }
 
 def wsgi_error(environ, start_response, error):
@@ -57,7 +58,8 @@ def application(environ, start_response):
                                                     arguments['height'],
                                                     arguments['gametype'],
                                                     arguments['ntokens'],
-                                                    arguments['nturns'] ) 
+                                                    arguments['nturns'], 
+                                                    arguments['scramble']) 
         elif functionname == "get_complete_state":
             response = public_interface.get_complete_state( arguments['mongo_id'] )
         elif functionname == "get_update":

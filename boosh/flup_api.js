@@ -2,12 +2,12 @@
 
 var flup = {
     server_address: "http://"+document.domain+":8000/",
-    timeout:3000,  
+    timeout:5000,  
  
     do_function:function( function_name, args )
     {
         console.log("Flup api: Function " + function_name );
-	console.log("Address: " + flup.server_address );
+	    console.log("Address: " + flup.server_address );
         var function_complete = false;
         args['function'] = function_name; 
 
@@ -42,7 +42,7 @@ var flup = {
     },
     
     start_game:function( args )
-    /* Args: 'width', 'height', 'ntokens', 'gametype', 'nturns' */
+    /* Args: 'width', 'height', 'ntokens', 'gametype', 'nturns', 'scramble' */
     {
         flup.do_function( 'start_game', args );
     },

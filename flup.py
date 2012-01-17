@@ -23,9 +23,10 @@ class Game( object ):
         self.laziness = 60 #If we've already found 30 solutions, stop looking. 
         self.minimumTimeBetweenBombs = 12
         self.minimumTimeBetweenJokers = 10
+        self.scramble = False 
     
     def generate( self, width=10, height=10, gametype="Default", ntokens=8,
-                    nturns=10):
+                    nturns=10, scramble=False):
         """ Generate a new game and save it to the database. 
             width/height - width & height of the generated grid. 
             gametype - "Clear", "Solution", or "Default" 
@@ -47,6 +48,7 @@ class Game( object ):
         self.failureCounter = 10
         self.lastBomb = 0 #Too many bombs make the game unplayable. 
         self.lastJoker = 0 #Too many jokers make the game confusing. 
+        self.scramble = scramble
             
         # Initialize Board
         if self.gametype == "Clear":
@@ -74,6 +76,7 @@ class Game( object ):
         self.failureCounter = mongo_object[u'failureCounter']
         self.lastBomb = mongo_object[u'lastBomb']
         self.lastJoker = mongo_object[u'lastJoker']
+        self.scramble = mongo_object[u'scramble'] 
         
         self.grid.unserialize( mongo_object[u'grid'] )
         print "Load complete." 
@@ -91,7 +94,8 @@ class Game( object ):
                     "grid": self.grid.serialize(),
                     "failureCounter":self.failureCounter, 
                     "lastBomb":self.lastBomb,  
-                    "lastJoker":self.lastJoker}  
+                    "lastJoker":self.lastJoker, 
+                    "scramble":self.scramble}  
         if self.mongo_id == 0:
             self.mongo_id = self.games_database().insert( document )
         else:
