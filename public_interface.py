@@ -85,7 +85,7 @@ def attempt_move( mongo_id, point, last_move ):
                  u'playable': g.gamestate, 
                  u'currentToken': g.obfuscateToken( g.currentToken ) } 
     else:
-        g.save()
+        g.saveFailure()
         return { u'success': False,
                  u'playable': g.gamestate,
                  u'failureCounter': g.failureCounter }

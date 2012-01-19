@@ -87,7 +87,6 @@ class Game( object ):
         document = {"width": self.width, 
                     "height": self.height, 
                     "gamestate": self.gamestate,
-                    "balls": "hello",
                     "gametype": self.gametype,
                     "tokens" : [ token.serialize() for token in self.tokens ],  
                     "currentToken": self.currentToken.serialize(),
@@ -101,6 +100,13 @@ class Game( object ):
         else:
             print "\t",self.games_database().update({u'_id':self.mongo_id}, document,
                 safe=True ) 
+        print "Save complete." 
+    
+    def saveFailure( self):
+        """ Save just the updated failure counter. """
+        print "Saving failure counter..." 
+        document = { "$inc": { "failureCounter": -1} } 
+        print "\t",self.games_database().update({u'_id':self.mongo_id}, document, safe=True ) 
         print "Save complete." 
 
     def success( self ):
