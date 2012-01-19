@@ -64,7 +64,9 @@ var game = {
             game.hint_counter += 1;
             if( game.hint_counter == 3 )
             {
-                $(".hint").effect("shake", {times:3}, 50);
+                $(game.hint_element).effect("shake", {times:3}, 100);
+                $(game.hint_element).effect('highlight', { }, 1000);
+                
                 game.hint_counter = 0;
             }
             console.log( "Move failed. " + game.hint_counter );
@@ -175,7 +177,18 @@ var game = {
         var diff = new_counter - game.failure_counter;
         game.failure_counter = new_counter;
         $(game.failure_counter_element).val( new_counter );
-        $(game.failure_counter_element).effect('highlight', {}, 2000);
+        if ( diff > 0 )
+        {
+            $(game.failure_counter_element).effect('highlight', {color: 'green'}, 2000);
+        }
+        if ( diff < 0 )
+        {
+            $(game.failure_counter_element).effect('highlight', {color: 'red'}, 2000);
+        }
+        if( game.failure_counter < 3 && diff < 0) 
+        {
+            $(game.failure_counter_element).effect('shake', {times:3-game.failure_counter}, 50*(3-game.failure_counter) );
+        }
     },
     loading: function( is_loading )
     {
