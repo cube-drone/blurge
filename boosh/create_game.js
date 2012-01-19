@@ -4,7 +4,7 @@ $(document).ready(function() {
     $( "#width" ).slider({
             value: $( "#width_amount").val(),
             min: 3,
-            max: 15,
+            max: 13,
             slide: function( event, ui ) { 
                 $( "#width_amount" ).val( ui.value );
                 }
@@ -13,7 +13,7 @@ $(document).ready(function() {
     $( "#height" ).slider({
             value: $( "#height_amount").val(),
             min: 3,
-            max: 15,
+            max: 13,
             slide: function( event, ui ) { 
                 $( "#height_amount" ).val( ui.value );
                 }
