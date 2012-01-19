@@ -76,7 +76,6 @@ var game = {
                 
                 game.hint_counter = 0;
             }
-            console.log( "Move failed. " + game.hint_counter );
              
             $(game.grid_element + " table").effect("shake", { times:3 }, 150);
             // Update failure count
@@ -86,7 +85,7 @@ var game = {
         } 
         else
         {
-            console.log( "Move successful." );
+            game.hint_counter = 0;
             console.log( result );
             // Update board
             game.make_moves( result.update ); 
