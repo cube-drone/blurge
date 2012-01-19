@@ -45,14 +45,21 @@ var game = {
     error_fn: function( message )
     {
         return function(){
-            console.log( message );
-            game.message( message );
+            $(".errortext").append( message ); 
+            $(".error").show();
+            $(".no_touching").show();
             game.loading( false );
         }
     },
-    message: function( message )
+    you_win: function()
     {
-        alert( message );
+        $(".no_touching").show();
+        $(".you_win").show();
+    },
+    you_lose: function()
+    {
+        $(".no_touching").show();
+        $(".you_lose").show();
     },
     update: function( result )
     {
@@ -121,13 +128,20 @@ var game = {
     {
         if( result.playable === undefined )
         {
-            game.message( "An error has occurred! : \n" + result ); 
+            game.error_fn( "An error has occurred! : \n" + result )(); 
             return;
         }
         // Check if you win or lose
         if( result.playable != "Playable" )
         {
-            game.message( "You " + result.playable );
+            if( result.playable == "Win" )
+            {
+                game.you_win();
+            }
+            else
+            {
+                game.you_lose();
+            }
             return false;
         }
         else
@@ -184,10 +198,6 @@ var game = {
         if ( diff < 0 )
         {
             $(game.failure_counter_element).effect('highlight', {color: 'red'}, 2000);
-        }
-        if( game.failure_counter < 3 && diff < 0) 
-        {
-            $(game.failure_counter_element).effect('shake', {times:3-game.failure_counter}, 50*(3-game.failure_counter) );
         }
     },
     loading: function( is_loading )
