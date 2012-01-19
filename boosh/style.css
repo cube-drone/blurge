@@ -1,6 +1,11 @@
+body
+{
+    font-family: Georgia, serif;
+}
+
 #home
 {
-    background: #ddd;
+    background: url('tokens/title.png') #6D8BC6 -50px -220px;
 }
 
 .title
@@ -43,6 +48,7 @@
 
 #create
 {
+    opacity: 0.9;
     width: 300px;
     margin: 10px;
     padding: 10px;
@@ -71,12 +77,12 @@
 
 .grid_container
 {
-    background-color: black;
-    width: 100%; 
-    margin: 0;
-    height: 600px;
-    min-height: 100%;
-    padding: 20px;
+    background: url('tokens/title.png') #6D8BC6 -50px -220px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .cube_grid
@@ -87,9 +93,12 @@
 
 .cube_grid table
 {
+    border: 5px solid black;
     background-color: white;
-    border: 1px solid gray;
     cursor: move;
+    box-shadow: 3px 3px 10px 5px #091B3D;
+    -moz-box-shadow: 3px 3px 10px 5px #091B3D;
+    -webkit-box-shadow: 3px 3px 10px 5px #091B3D;
 }
 
 .gridsquare 
@@ -130,6 +139,16 @@
     top: 20px; 
 }
 
+.sidebar div
+{
+    opacity: 0.8;
+}
+
+.sidebar div:hover
+{
+    opacity: 1;
+}
+
 .sidebar_container
 {
     padding: 20px;
@@ -139,6 +158,14 @@
     border-bottom: 2px solid gray; 
 }
 
-.next_container
+.hint, .new_game
 {
+    cursor: pointer;
+}
+
+.failure_counter
+{
+     border: none;
+     font-weight: bold;
+     font-size: large;
 }

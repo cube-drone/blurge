@@ -8,6 +8,7 @@ var game = {
     next_token_element: ".next_token",
     failure_counter: 0,
     failure_counter_element: ".failure_counter",
+    hint_counter: 0,
     hint_element: ".hint",
     new_game_element: ".new_game", 
     is_loading: false,
@@ -60,7 +61,15 @@ var game = {
         game.is_still_playable( result );
         if( result.success === false ) 
         {
-            console.log( "Move failed." );
+            game.hint_counter += 1;
+            if( game.hint_counter == 3 )
+            {
+                $(".hint").effect("shake", {times:3}, 50);
+                game.hint_counter = 0;
+            }
+            console.log( "Move failed. " + game.hint_counter );
+             
+            $(game.grid_element + " table").effect("shake", { times:3 }, 150);
             // Update failure count
             game.set_failure_counter( result.failureCounter );
             // Reset token 
@@ -207,7 +216,7 @@ $(document).ready(function() {
     flup.get_complete_state( { 
         mongo_id: game.mongo_id,
         success_callback: game.setup,
-        failure_callback: game.error_fn("Couln't load page.")
+        failure_callback: game.error_fn("Couldn't load page.")
     });
 });
 
