@@ -6,52 +6,52 @@
 
 .A
 {
-    background-color: green;
-}
-
-.B
-{
-    background-color: blue;
-}
-
-.C
-{
-    background-color: red;
-}
-
-.D
-{
-    background-color: gray;
-}
-
-.E
-{
-    background-color: pink;
-}
-
-.F
-{
-    background-color: orange;
-}
-
-.G
-{
-    background-color: aqua;
-}
-
-.H
-{
-    background-color: salmon;
-}
-
-.I
-{
-    background-color: #FEFEFE;
+    background: url( "tokens/token_sprite.png" ) 0 51px; 
 }
 
 .J
 {
-    background-color: purple;
+    background: url( "tokens/token_sprite.png" ) 102px 51px; 
+}
+
+.I
+{
+    background: url( "tokens/token_sprite.png" ) 153px 51px; 
+}
+
+.H
+{
+    background: url( "tokens/token_sprite.png" ) 204px 51px; 
+}
+
+.G
+{
+    background: url( "tokens/token_sprite.png" ) 255px 51px; 
+}
+
+.F
+{
+    background: url( "tokens/token_sprite.png" ) 306px 51px; 
+}
+
+.E
+{
+    background: url( "tokens/token_sprite.png" ) 357px 51px; 
+}
+
+.D
+{
+    background: url( "tokens/token_sprite.png" ) 408px 51px; 
+}
+
+.C
+{
+    background: url( "tokens/token_sprite.png" ) 459px 51px; 
+}
+
+.B
+{
+    background: url( "tokens/token_sprite.png" ) 510px 51px; 
 }
 
 .Knight

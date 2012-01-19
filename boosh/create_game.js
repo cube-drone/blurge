@@ -2,7 +2,7 @@
 
 $(document).ready(function() {
     $( "#width" ).slider({
-            value:7,
+            value: $( "#width_amount").val(),
             min: 5,
             max: 12,
             slide: function( event, ui ) { 
@@ -11,7 +11,7 @@ $(document).ready(function() {
             });
 
     $( "#height" ).slider({
-            value:7,
+            value: $( "#height_amount").val(),
             min: 5,
             max: 12,
             slide: function( event, ui ) { 
@@ -20,11 +20,27 @@ $(document).ready(function() {
             });
     
     $( "#ntokens" ).slider({
-            value:5,
+            value: $("ntokens_amount").val(),
             min: 1,
             max: 10,
             slide: function( event, ui ) { 
                 $( "#ntokens_amount" ).val( ui.value );
+                }
+            });
+    
+    $( "#scramble" ).slider({
+            value:0,
+            min: 0,
+            max: 1,
+            slide: function( event, ui ) { 
+                if(ui.value === 0)
+                { 
+                    $( "#scramble_amount" ).val( "Easy" ).data('scramble', false);
+                }
+                else
+                {
+                    $( "#scramble_amount" ).val( "Hard" ).data('scramble', true);
+                }
                 }
             });
 
@@ -34,6 +50,8 @@ $(document).ready(function() {
             width: $( "#width_amount" ).val(),
             height: $( "#height_amount" ).val(),
             ntokens: $( "#ntokens_amount").val(),
+            scramble: $( "#scramble_amount").data('scramble'), 
+            //success_callback: function(mongo_id){ console.log( mongo_id); } 
             success_callback: function(mongo_id){ window.location = "game.html#" + mongo_id; }
         });
     } 

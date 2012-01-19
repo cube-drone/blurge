@@ -14,6 +14,7 @@ var game = {
     token_obfuscators: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
 "L", "M", "N", "O", "P", "Q", "R"], 
     token_class_mappings: {},
+    scrambled: true, 
     setup: function( gamestate )
     {
         game.loading( false );
@@ -22,14 +23,16 @@ var game = {
         $(game.container_element).boxy( ); 
         $(game.hint_element).click(game.hint);
         $(game.new_game_element).click(game.new_game);
-        
-        for( var i = 0; i < gamestate.tokens.length; i++ )
+
+        if( 'tokens' in gamestate )
         {
-            game.token_class_mappings[ game.token_obfuscators[i] ] = gamestate.tokens[i];
-        }
-        console.log( game.token_class_mappings );
+            game.scrambled = false;
+            for( var i = 0; i < gamestate.tokens.length; i++ )
+            {
+                game.token_class_mappings[ game.token_obfuscators[i] ] = gamestate.tokens[i];
+            }
+        }  
         
-        console.log( gamestate.tokens );
         game.update( gamestate );
         
         console.log( game); 
@@ -132,7 +135,7 @@ var game = {
     {
         move =  move_lib.move_to_object(move);
         if( move.movename === "setToken" || move.movename === "placeToken" ){
-            $(game.grid_element).grid( 'place', move.x, move.y, token_lib.create_token( move.token, game.token_class_mappings[move.token]  ) );  
+            $(game.grid_element).grid( 'place', move.x, move.y, game.create_token( move.token ) );  
             // render this space unusable
             $(game.grid_element).grid( 'get', move.x, move.y).droppable('option', 'disabled', true );
             $(game.grid_element).grid( 'get', move.x, move.y).effect('highlight', { }, 2000);
@@ -153,7 +156,7 @@ var game = {
     next_token: function( )
     {
         var token_element = $(game.next_token_element)
-        token_element.html( token_lib.create_token( game.gamestate.currentToken, game.token_class_mappings[game.gamestate.currentToken] ).draggable({
+        token_element.html( game.create_token( game.gamestate.currentToken ).draggable({
             revert:'invalid' 
         } )); 
     },
@@ -181,6 +184,14 @@ var game = {
             game.is_loading = false;
             document.body.style.cursor = "default";
         }
+    },
+    create_token:function( token_name ){
+        var token_class = token_name;
+        if (! game.scrambled)
+        {
+            token_class = game.token_class_mappings[token_name];
+        }
+        return $("<div class='token "+token_class+"' ></div>").data("token_name",token_name);
     }
 
 }
