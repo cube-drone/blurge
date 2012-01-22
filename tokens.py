@@ -10,6 +10,12 @@ class Token( object ):
 
     def isValid( self, grid, point ):
         """ Takes a grid object and a tuple point (x, y) """
+        
+        # No token may be placed next to a King
+        adjacent_points = adjacentPoints( point )
+        if( grid.isTokenAtPointInList( King(), adjacent_points) ):
+            return False
+
         return True
     
     def afterPlacement( self, grid, point ):
@@ -48,6 +54,8 @@ class Checker( Token ):
 
     def isValid( self, grid, point ):
         """ When x is odd, y must be even. When x is even, y must be odd. """
+        if not super( Checker, self ).isValid( grid, point ):
+            return False
         x, y = point
         if x % 2 == 0:
             if y % 2 == 0:
@@ -76,6 +84,8 @@ class Rook( Token ):
         return u"Rook" 
     def isValid( self, grid, point):
         """ Object must be horizontal or vertical to another rook. """
+        if not super( Rook, self ).isValid( grid, point ):
+            return False
         
         # If there isn't a rook on the board, there won't ever be a way to place one! 
         if not self.existsOnTheBoard( grid ): 
@@ -102,12 +112,17 @@ def __rook_test():
     assert( Rook().isValid( g, (2, 3 ) ) )
     assert( not Rook().isValid( g, (5, 5) ) )
 
+    #Nothing can be placed next to a king.     
+    assert( g.placeToken( King(), (3,8) ) )
+    assert( not Rook().isValid( g, (3,9) ) )
 
 class Knight( Token ):
     def name( self ):
         return u"Knight" 
     def isValid( self, grid, point):
         """ Object must be two-up-and-one-over in any direction to another knight. """
+        if not super( Knight, self ).isValid( grid, point ):
+            return False
         
         if not self.existsOnTheBoard( grid ): 
             return True
@@ -145,6 +160,8 @@ class Pawn( Token ):
         return u"Pawn"
     def isValid( self, grid, point):
         """ A pawn can be placed adjacent to any other piece, or diagonal to any other pawn. """ 
+        if not super( Pawn, self ).isValid( grid, point ):
+            return False
         
         if not self.existsOnTheBoard( grid ): 
             return True
@@ -183,17 +200,14 @@ class King( Token ):
         return u"King"
     def isValid( self, grid, point ):
         """ A king cannot be placed adjacent to any other piece, nor can any other piece be placed adjacent to a king."""
+        if not super( King, self ).isValid( grid, point ):
+            return False
         if( grid.isAnyTokenAtPointInList( adjacentPoints( point ) ) ):
             return False
         return True 
     
     def afterPlacement( self, grid, point ):
         """ Called after the token is placed at a point. """
-        
-        points = adjacentPoints( point )
-        for point in points:
-            grid.setToken( InvisibleToken(), point )  
-
         return self
 
 def __king_test():
@@ -204,12 +218,15 @@ def __king_test():
     assert( not g.placeToken( King(), (5, 6) ) )
     assert( not g.placeToken( King(), (6, 6) ) )
     assert( not g.placeToken( King(), (0, 0) ) )
+    assert( g.placeToken( King(), (3,3) ) )
 
 class Bishop( Token ):
     def name( self ):
         return u"Bishop" 
     def isValid( self, grid, point ):
         """ A bishop can only be placed diagonally to another Bishop. """
+        if not super( Bishop, self ).isValid( grid, point ):
+            return False
         
         # If there isn't a bishop on the board, there won't ever be a way to place one! 
         if not self.existsOnTheBoard( grid ): 
@@ -234,6 +251,8 @@ class Parasite( Token ):
         return u"Parasite" 
     def isValid( self, grid, point ):
         """ A parasite can be adjacent to any token but not another parasite. """
+        if not super( Parasite, self ).isValid( grid, point ):
+            return False
         
         if not self.existsOnTheBoard( grid ): 
             return True
@@ -257,6 +276,8 @@ class Joker( Token ):
         return u"Joker" 
     def isValid( self, grid, point ):
         """ No pattern here. Randomness. """
+        if not super( Joker, self ).isValid( grid, point ):
+            return False
         return random.choice( [ True, True, False ] ) 
 
 def __joker_test():
@@ -276,6 +297,8 @@ class Bomb( Token ):
     def name( self ):
         return u"Bomb"
     def isValid( self, grid, point ):
+        if not super( Bomb, self ).isValid( grid, point ):
+            return False
         return True
     def afterPlacement( self, grid, point ):
         """ Called after the token is placed at a point. """
@@ -305,6 +328,8 @@ class Glob( Token ):
     def name( self ):
         return u"Glob" 
     def isValid( self, grid, point ):
+        if not super( Glob, self ).isValid( grid, point ):
+            return False
         if not self.existsOnTheBoard( grid ): 
             return True
         if self.atPointInList( grid, adjacentPoints( point ) ):
@@ -325,6 +350,8 @@ class Brick( Token ):
         return u"Brick"
     def isValid( self, grid, point ):
         """ A brick cannot be placed adjacent to any piece. """
+        if not super( Brick, self ).isValid( grid, point ):
+            return False
         if( grid.isAnyTokenAtPointInList( adjacentPoints( point ) ) ):
             return False
         return True 
