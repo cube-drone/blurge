@@ -205,10 +205,6 @@ class King( Token ):
         if( grid.isAnyTokenAtPointInList( adjacentPoints( point ) ) ):
             return False
         return True 
-    
-    def afterPlacement( self, grid, point ):
-        """ Called after the token is placed at a point. """
-        return self
 
 def __king_test():
     g = TokenGrid( 10, 10 )
@@ -302,6 +298,7 @@ class Bomb( Token ):
         return True
     def afterPlacement( self, grid, point ):
         """ Called after the token is placed at a point. """
+        super( Bomb, self ).afterPlacement( grid, point ) 
         points = adjacentPoints( point )
         for point in points:
             grid.clearToken( point )
@@ -358,6 +355,7 @@ class Brick( Token ):
     
     def afterPlacement( self, grid, point ):
         """ Called after the token is placed at a point. """
+        super(Brick, self).afterPlacement( grid, point ) 
        
         points = adjacentPoints( point )
         for brick_point in points:
