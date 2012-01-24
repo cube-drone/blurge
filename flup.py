@@ -37,7 +37,7 @@ class Game( object ):
         self.width = width
         self.height = height
         self.grid = Grid( width, height )
-        self.tokens = tokens.selectRandomNTokens( ntokens )  
+        self.tokens = tokens.selectRandomNTokens( ntokens, width, height )  
         self.nturns = nturns
         self.gamestate = "Playable" # "Playable" || "Win" || "Lose"  
         self.mongo_id = 0 #The mongo_db id of this game record. 
