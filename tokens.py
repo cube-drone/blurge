@@ -397,7 +397,7 @@ def __brick_test():
 
 class Wallflower( Token ):
     def name( self ):
-        return u"A"
+        return u"Wallflower"
     def isValid( self, grid, point ):
         """ A wallflower can only be placed on an edge. """
         if not super( Wallflower, self ).isValid( grid, point ):
@@ -420,7 +420,7 @@ def __wallflower_test():
 
 class Church( Token ):
     def name( self ):
-        return u"B"
+        return u"Church"
     def isValid( self, grid, point ):
         """ A church cannot be diagonal to another church.  """
         if not super( Church, self ).isValid( grid, point ):
@@ -441,7 +441,7 @@ def __church_test():
 
 class State( Token ):
     def name( self ):
-        return u"C"
+        return u"State"
     def isValid( self, grid, point ):
         """ A state cannot be horizontal to another state.   """
         if not super( State, self ).isValid( grid, point ):
@@ -470,7 +470,7 @@ def __state_test():
 
 class Crowd( Token ):
     def name( self ):
-        return u"E"
+        return u"Crowd"
     
     def validMemberOfGame( self, ntokens, grid_x, grid_y, tokens ):
         """ The game board must be at least 5x5 for the Crowd to join in the fun. """
@@ -509,7 +509,7 @@ def __crowd_test():
 
 class Assassin( Token ):
     def name( self ):
-        return u"F"
+        return u"Assassin"
     
     def isRare( self ):
         return True

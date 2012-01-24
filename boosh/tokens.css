@@ -7,52 +7,52 @@
 
 .A
 {
-    background: url( "tokens/token_sprite.png" ) 0 51px; 
+    background: url( "tokens/token_sprite.png" ) 0 102px; 
 }
 
 .J
 {
-    background: url( "tokens/token_sprite.png" ) 102px 51px; 
+    background: url( "tokens/token_sprite.png" ) 102px 102px; 
 }
 
 .I
 {
-    background: url( "tokens/token_sprite.png" ) 153px 51px; 
+    background: url( "tokens/token_sprite.png" ) 153px 102px; 
 }
 
 .H
 {
-    background: url( "tokens/token_sprite.png" ) 204px 51px; 
+    background: url( "tokens/token_sprite.png" ) 204px 102px; 
 }
 
 .G
 {
-    background: url( "tokens/token_sprite.png" ) 255px 51px; 
+    background: url( "tokens/token_sprite.png" ) 255px 102px; 
 }
 
 .F
 {
-    background: url( "tokens/token_sprite.png" ) 306px 51px; 
+    background: url( "tokens/token_sprite.png" ) 306px 102px; 
 }
 
 .E
 {
-    background: url( "tokens/token_sprite.png" ) 357px 51px; 
+    background: url( "tokens/token_sprite.png" ) 357px 102px; 
 }
 
 .D
 {
-    background: url( "tokens/token_sprite.png" ) 408px 51px; 
+    background: url( "tokens/token_sprite.png" ) 408px 102px; 
 }
 
 .C
 {
-    background: url( "tokens/token_sprite.png" ) 459px 51px; 
+    background: url( "tokens/token_sprite.png" ) 459px 102px; 
 }
 
 .B
 {
-    background: url( "tokens/token_sprite.png" ) 510px 51px; 
+    background: url( "tokens/token_sprite.png" ) 510px 102px; 
 }
 
 .Knight
@@ -108,4 +108,29 @@
 .Brick
 {
     background: url( "tokens/token_sprite.png" ) 510px 0; 
+}
+
+.Wallflower
+{
+    background: url( "tokens/token_sprite.png" ) 460px 51px; 
+}
+
+.Assassin
+{
+    background: url( "tokens/token_sprite.png" ) 409px 51px; 
+}
+
+.Church
+{
+    background: url( "tokens/token_sprite.png" ) 561px 51px; 
+}
+
+.State
+{
+    background: url( "tokens/token_sprite.png" ) 510px 51px; 
+}
+
+.Crowd
+{
+    background: url( "tokens/token_sprite.png" ) 358px 51px; 
 }
