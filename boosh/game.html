@@ -28,14 +28,45 @@
     	    <input class='failure_counter' readonly='readonly' type="text" value='0' />
 	</div>
 	
-	<div class='hint_container sidebar_container'>
-	    <div class='hint'>Hint</div> 
+	<div class='hint sidebar_container'>
+	    <h3>Hint</h3> 
 	</div>
 	
-	<div class='hint_container sidebar_container'>
-	    <div class='new_game'>New Game</div> 
+	<div class='new_game sidebar_container'>
+            <h3>New Game</h3>
 	</div>
     </div>  
+
+    <div class="error">
+	<h3> A Mysterious Error Has Occurred! </h3>
+        <div class="errortext"> </div> 
+	<input type="button" value="Reload Page" onClick="window.location.reload()">	
+    </div> 
+
+    <div class="you_win">
+        <h3> You Win! </h3>
+        
+        <strong> Final Score: </strong>
+	<div class='failure_container'>
+    	    <input class='failure_counter' readonly='readonly' type="text" value='0' />
+	</div>
+	
+        <div class='new_game'>
+            <h3>New Game</h3>
+	</div>
+    </div>
+    
+    <div class="you_lose">
+        <h3> You Lose! </h3>
+	<p><em>Good day, sir!</em></p>
+	
+        <div class='new_game'>
+            <h3>New Game</h3>
+	</div>
+    </div>
+
+    <div class="no_touching"></div>
+
 </div> 
 <script src="console_fake.js"> </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>

@@ -3,8 +3,8 @@
 $(document).ready(function() {
     $( "#width" ).slider({
             value: $( "#width_amount").val(),
-            min: 5,
-            max: 12,
+            min: 3,
+            max: 13,
             slide: function( event, ui ) { 
                 $( "#width_amount" ).val( ui.value );
                 }
@@ -12,16 +12,16 @@ $(document).ready(function() {
 
     $( "#height" ).slider({
             value: $( "#height_amount").val(),
-            min: 5,
-            max: 12,
+            min: 3,
+            max: 13,
             slide: function( event, ui ) { 
                 $( "#height_amount" ).val( ui.value );
                 }
             });
     
     $( "#ntokens" ).slider({
-            value: $("ntokens_amount").val(),
-            min: 1,
+            value: 5,
+            min: 2,
             max: 10,
             slide: function( event, ui ) { 
                 $( "#ntokens_amount" ).val( ui.value );
@@ -50,7 +50,8 @@ $(document).ready(function() {
             width: $( "#width_amount" ).val(),
             height: $( "#height_amount" ).val(),
             ntokens: $( "#ntokens_amount").val(),
-            scramble: $( "#scramble_amount").data('scramble'), 
+            scramble: $( "#scramble_amount").data('scramble'),
+            nturns: Math.round( ( parseInt($( "#width_amount").val(), 0) + parseInt($("#height_amount").val(), 0) )  / 2), 
             //success_callback: function(mongo_id){ console.log( mongo_id); } 
             success_callback: function(mongo_id){ window.location = "game.html#" + mongo_id; }
         });

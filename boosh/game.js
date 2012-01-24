@@ -8,6 +8,7 @@ var game = {
     next_token_element: ".next_token",
     failure_counter: 0,
     failure_counter_element: ".failure_counter",
+    hint_counter: 0,
     hint_element: ".hint",
     new_game_element: ".new_game", 
     is_loading: false,
@@ -44,14 +45,21 @@ var game = {
     error_fn: function( message )
     {
         return function(){
-            console.log( message );
-            game.message( message );
+            $(".errortext").append( message ); 
+            $(".error").show();
+            $(".no_touching").show();
             game.loading( false );
         }
     },
-    message: function( message )
+    you_win: function()
     {
-        alert( message );
+        $(".no_touching").show();
+        $(".you_win").show();
+    },
+    you_lose: function()
+    {
+        $(".no_touching").show();
+        $(".you_lose").show();
     },
     update: function( result )
     {
@@ -60,7 +68,16 @@ var game = {
         game.is_still_playable( result );
         if( result.success === false ) 
         {
-            console.log( "Move failed." );
+            game.hint_counter += 1;
+            if( game.hint_counter == 3 )
+            {
+                $(game.hint_element).effect("shake", {times:3}, 100);
+                $(game.hint_element).effect('highlight', { }, 1000);
+                
+                game.hint_counter = 0;
+            }
+             
+            $(game.grid_element + " table").effect("shake", { times:3 }, 150);
             // Update failure count
             game.set_failure_counter( result.failureCounter );
             // Reset token 
@@ -68,7 +85,7 @@ var game = {
         } 
         else
         {
-            console.log( "Move successful." );
+            game.hint_counter = 0;
             console.log( result );
             // Update board
             game.make_moves( result.update ); 
@@ -110,13 +127,20 @@ var game = {
     {
         if( result.playable === undefined )
         {
-            game.message( "An error has occurred! : \n" + result ); 
+            game.error_fn( "An error has occurred! : \n" + result )(); 
             return;
         }
         // Check if you win or lose
         if( result.playable != "Playable" )
         {
-            game.message( "You " + result.playable );
+            if( result.playable == "Win" )
+            {
+                game.you_win();
+            }
+            else
+            {
+                game.you_lose();
+            }
             return false;
         }
         else
@@ -166,7 +190,14 @@ var game = {
         var diff = new_counter - game.failure_counter;
         game.failure_counter = new_counter;
         $(game.failure_counter_element).val( new_counter );
-        $(game.failure_counter_element).effect('highlight', {}, 2000);
+        if ( diff > 0 )
+        {
+            $(game.failure_counter_element).effect('highlight', {color: 'green'}, 2000);
+        }
+        if ( diff < 0 )
+        {
+            $(game.failure_counter_element).effect('highlight', {color: 'red'}, 2000);
+        }
     },
     loading: function( is_loading )
     {
@@ -207,7 +238,7 @@ $(document).ready(function() {
     flup.get_complete_state( { 
         mongo_id: game.mongo_id,
         success_callback: game.setup,
-        failure_callback: game.error_fn("Couln't load page.")
+        failure_callback: game.error_fn("Couldn't load page.")
     });
 });
 
