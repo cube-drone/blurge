@@ -1,3 +1,4 @@
+
 (function( $ ){
 
   var methods = {
@@ -12,7 +13,7 @@
         var x = options.x;
         var y = options.y;
         var size = options.size; 
-        var drop_token = options.drop_token;
+        var each_square_function = options.each_square_function;
 
         var total_height = y * size;
         var total_width = (x+1) * size; 
@@ -33,35 +34,7 @@
                 var odd = (i + j) % 2 == 0 ? 'even' : 'odd';
                 var grid_square = $("<td class='x_"+j+" y_"+(y-i-1)+" gridsquare "+odd+"' style='height:"+size+"px; width:"+size+"px; min-height="+size+"px;min-width="+size+"px; overflow=hidden; ' ></td>")
                 grid_square.data("x",j).data("y", (y-i-1)) ;
-                var click_fn = function( grid_square)
-                {
-                    var target = grid_square;
-                    return function( event, ui )
-                    {
-                        var x = target.data('x') ;
-                        var y = target.data('y') ;
-                        drop_token(  x, y );
-                    }
-                }
-                var drop_fn = function( grid_square )
-                {
-                    var target = grid_square;
-                    return function( event, ui )
-                    {
-                        token = ui.draggable;
-                        var x = target.data('x') ;
-                        var y = target.data('y') ;
-                        drop_token(  x, y );
-                        token.remove();
-                    }
-                }
-                grid_square.dblclick( click_fn(grid_square) );
-                grid_square.droppable( {
-                        accept:".token",
-                        activeClass: "drop_target", 
-                        hoverClass: "drop_target_hover",
-                        drop: drop_fn( grid_square )
-                });  
+                each_square_function( grid_square );
                 table_row.append( grid_square );
             }
             table.append(table_row);

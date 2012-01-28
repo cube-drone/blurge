@@ -20,7 +20,7 @@ var game = {
     {
         game.loading( false );
         game.gamestate = gamestate;
-        $(game.grid_element).grid( { x:gamestate.width, y:gamestate.height, size:52, drop_token:game.drop_token } ); 
+        $(game.grid_element).grid( { x:gamestate.width, y:gamestate.height, size:52, each_square_function:game.foreach_square_in_grid } ); 
         $(game.container_element).boxy( ); 
         $(game.hint_element).click(game.hint);
         $(game.new_game_element).click(game.new_game);
@@ -223,6 +223,37 @@ var game = {
             token_class = game.token_class_mappings[token_name];
         }
         return $("<div class='token "+token_class+"' ></div>").data("token_name",token_name);
+    },
+    foreach_square_in_grid: function( grid_square ){
+        var click_fn = function( grid_square)
+        {
+            var target = grid_square;
+            return function( event, ui )
+            {
+                var x = target.data('x') ;
+                var y = target.data('y') ;
+                game.drop_token(  x, y );
+            }
+        }
+        var drop_fn = function( grid_square )
+        {
+            var target = grid_square;
+            return function( event, ui )
+            {
+                token = ui.draggable;
+                var x = target.data('x') ;
+                var y = target.data('y') ;
+                game.drop_token(  x, y );
+                token.remove();
+            }
+        }
+        grid_square.dblclick( click_fn(grid_square) );
+        grid_square.droppable( {
+                accept:".token",
+                activeClass: "drop_target", 
+                hoverClass: "drop_target_hover",
+                drop: drop_fn( grid_square )
+        });  
     }
 
 }
