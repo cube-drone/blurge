@@ -82,7 +82,8 @@ body
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: 0;  
+    z-index: -1;
 }
 
 .cube_grid
@@ -133,18 +134,17 @@ body
 
 .sidebar
 {
-    position: absolute;
     position: fixed;
     left: 0px;
-    top: 20px; 
+    top: 160px; 
 }
 
-.sidebar div
+.sidebar_container
 {
     opacity: 0.8;
 }
 
-.sidebar div:hover
+.sidebar_container:hover
 {
     opacity: 1;
 }
