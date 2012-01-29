@@ -198,6 +198,7 @@ var game = {
         {
             $(game.failure_counter_element).effect('highlight', {color: 'red'}, 2000);
         }
+        $('.failure_ticker').rotating_ticker( "set", new_counter  );
     },
     loading: function( is_loading )
     {
@@ -271,5 +272,7 @@ $(document).ready(function() {
         success_callback: game.setup,
         failure_callback: game.error_fn("Couldn't load page.")
     });
+    
+    $('.failure_ticker').rotating_ticker( $(".failure_counter") );
 });
 

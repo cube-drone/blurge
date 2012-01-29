@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <title>Game</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="tokens.css">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="rotating_ticker.css" /> 
 </head>
 <body id="game">
 <div>
@@ -15,6 +16,8 @@
             ">
     </div>
     </div>
+	
+    <div class='failure_ticker' style='width:0px; margin-bottom: 30px;'> </div> 
    
     <div class='sidebar'>
  
@@ -24,8 +27,8 @@
 	    <p><em>Drag me.</em></p>
         </div>
 	
-	<div class='failure_container sidebar_container'>
-    	    <input class='failure_counter' readonly='readonly' type="text" value='0' />
+	<div class='failure_container sidebar_container' style='display:none;'>
+    	    <input class='failure_counter' readonly='readonly' type="text" value='0'  />
 	</div>
 	
 	<div class='hint sidebar_container'>
@@ -73,10 +76,12 @@
 <script>window.jQuery || document.write('<script src="jquery-1.6.2.min.js"><\/script>')</script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 <script src="flup_api.js"></script>
-<script src="token.js"></script>
 <script src="moves.js"></script>
 <script src="boxy_container.js"></script>
 <script src="cube_grid.js"></script>
+<script src="rotate_scale.js"></script>
+<script src="rotating_ticker.js"></script>
+
 <script src="game.js"></script>
 </body>
 </html>
